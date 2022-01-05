@@ -1,6 +1,4 @@
 import 'package:education/providers/students.dart';
-import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,22 +17,19 @@ class StudentsScreen extends StatelessWidget {
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : RefreshIndicator(
-                  onRefresh: () => _refreshstudents(context),
-                  child: Consumer<Students>(
-                    builder: (ctx, students, _) => Material(
-                      child: ListView.builder(
-                        itemCount: 5,
-                        itemBuilder: (_, i) => ListTile(
-                          leading: Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Colors.teal[900],
-                          ),
-                          title: Text("Full Name"),
-                          subtitle: Text('Grade 12, Division 3 .'),
-                          trailing: Icon(Icons.done, color: Colors.pink),
+              : Consumer<Students>(
+                  builder: (ctx, students, _) => Material(
+                    child: ListView.builder(
+                      itemCount: students.listStudent.length,
+                      itemBuilder: (_, i) => ListTile(
+                        leading: Icon(
+                          Icons.person,
+                          size: 50,
+                          color: Colors.teal[900],
                         ),
+                        title: Text(students.listStudent[i].firstName),
+                        subtitle: Text(students.listStudent[i].id.toString()),
+                        trailing: Icon(Icons.done, color: Colors.pink),
                       ),
                     ),
                   ),
@@ -42,3 +37,6 @@ class StudentsScreen extends StatelessWidget {
     );
   }
 }
+
+
+
