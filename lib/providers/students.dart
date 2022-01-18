@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:education/grade/grade.dart';
+import 'package:education/model/grade.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:http/http.dart' as http;

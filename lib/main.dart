@@ -1,11 +1,12 @@
 import 'package:education/providers/student.dart';
 import 'package:education/providers/students.dart';
+import 'package:education/screens/list_student.dart';
 import 'package:education/screens/studentsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import 'grade/list_grade.dart';
+import 'screens/list_grade.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: {
-            '/': (ctx) => GradeListView(),
+            '/': (ctx) => StudentListView(),
           }),
     );
   }
