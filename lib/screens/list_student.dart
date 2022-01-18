@@ -1,33 +1,32 @@
+import 'package:education/providers/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import 'grade.dart';
-
-class GradeListView extends StatefulWidget {
+class StudentListView extends StatefulWidget {
   @override
-  _GradeListViewState createState() => _GradeListViewState();
+  _StudentListViewState createState() => _StudentListViewState();
 }
 
-class _GradeListViewState extends State<GradeListView> {
-  static const _pageSize = 4;
+class _StudentListViewState extends State<StudentListView> {
+  static const _pageSize = 20;
 
-  final PagingController<int, Grade> _pagingController =
+  final PagingController<int, Student> _pagingController =
       PagingController(firstPageKey: 0);
 
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
-      _fetchGradePage(pageKey);
+      _fetchPage(pageKey);
     });
     super.initState();
   }
 
-  Future<void> _fetchGradePage(int pageKey) async {
+  Future<void> _fetchPage(int pageKey) async {
     try {
       final newItems = await Provider.of<Students>(context, listen: false)
-          .getGradeListByPage(pageKey, _pageSize);
+          .getStudentListByPage(pageKey, _pageSize);
       final isLastPage = newItems.length < _pageSize;
 
       ;
@@ -48,14 +47,14 @@ class _GradeListViewState extends State<GradeListView> {
       // package takes care of that. If you want to customize them, use the
       // [PagedChildBuilderDelegate] properties.
       Scaffold(
-        body: PagedListView<int, Grade>(
+        body: PagedListView<int, Student>(
           pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Grade>(
+          builderDelegate: PagedChildBuilderDelegate<Student>(
             itemBuilder: (context, item, index) => ListTile(
               leading: CircleAvatar(
                 radius: 20,
               ),
-              title: Text(item.nameEn),
+              title: Text(item.firstName),
               subtitle: Text(item.id.toString()),
               trailing: Icon(
                 Icons.person_remove,

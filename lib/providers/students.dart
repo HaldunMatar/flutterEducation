@@ -147,7 +147,7 @@ class Students with ChangeNotifier {
       print(error.toString());
       // throw (error);
     }
-
+    notifyListeners();
     return _listGrade;
   }
 }
