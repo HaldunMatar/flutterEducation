@@ -1,6 +1,7 @@
 import 'package:education/providers/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:education/screens/list_student.dart';
+import 'package:education/screens/student_form.dart';
 import 'package:education/screens/studentsScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -26,11 +27,14 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Education System',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primarySwatch: Colors.teal,
           ),
           initialRoute: '/',
           routes: {
-            '/': (ctx) => StudentListView(),
+            '/': (ctx) => StudenForm(),
+            StudentListView.routeName: (ctx) => StudentListView(),
+            GradeListView.routeName: (ctx) => GradeListView(),
+            StudenForm.routeName: (ctx) => StudenForm(),
           }),
     );
   }

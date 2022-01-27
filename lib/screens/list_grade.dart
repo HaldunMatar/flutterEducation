@@ -1,11 +1,14 @@
+import 'package:education/model/app_drawer.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import '../grade/grade.dart';
+import '../model/grade.dart';
 
 class GradeListView extends StatefulWidget {
+  static const routeName = '/GradeListView';
+
   @override
   _GradeListViewState createState() => _GradeListViewState();
 }
@@ -52,6 +55,13 @@ class _GradeListViewState extends State<GradeListView> {
       // package takes care of that. If you want to customize them, use the
       // [PagedChildBuilderDelegate] properties.
       Scaffold(
+        appBar: AppBar(
+          title: Text('Grade List View'),
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+          ],
+        ),
+        drawer: AppDrawer(),
         body: PagedListView<int, Grade>(
           pagingController: _pagingController,
           builderDelegate: PagedChildBuilderDelegate<Grade>(

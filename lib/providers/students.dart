@@ -34,8 +34,8 @@ class Students with ChangeNotifier {
 
       if (responRes.statusCode == 200) {
         const Utf8Codec utf8 = Utf8Codec();
-        final jsonResponRes = convert
-            .jsonDecode(utf8.decode(responRes.bodyBytes)) as List<dynamic>;
+        final jsonResponRes =
+            convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
         print('length is  $itemCount');
@@ -149,5 +149,30 @@ class Students with ChangeNotifier {
     }
     notifyListeners();
     return _listGrade;
+  }
+
+  addStudent(Student editeStudent) async {
+    final url = Uri.http(basicUrl, '/students/new/');
+    try {
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({
+          'firstName': editeStudent.firstName,
+          'lastName': editeStudent.lastName,
+          'email': editeStudent.email,
+        }),
+      );
+      print(response.body);
+      print(json.encode({
+        'firstName': editeStudent.firstName,
+        'lastName': editeStudent.lastName,
+        'email': editeStudent.email,
+      }));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 }

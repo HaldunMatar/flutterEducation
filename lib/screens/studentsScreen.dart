@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 
 class StudentsScreen extends StatelessWidget {
   const StudentsScreen({Key? key}) : super(key: key);
+
+  static const routeName = '/StudentsScreen';
   Future<void> _refreshstudents(BuildContext context) async {
     await Provider.of<Students>(context, listen: false).fetchStudents();
   }
