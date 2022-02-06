@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:education/providers/student.dart';
+import 'package:intl/intl.dart';
 
 import 'dart:convert' as convert;
 
@@ -44,11 +45,11 @@ class Students with ChangeNotifier {
         print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
-            id: element['id'],
-            lastName: element['firstName'],
-            email: element['firstName'],
-            firstName: element['firstName'],
-          ));
+              id: element['id'],
+              lastName: element['firstName'],
+              email: element['firstName'],
+              firstName: element['firstName'],
+              brithDate: element['brithDate']));
           print(element['id']);
           print(element['firstName']);
         });
@@ -85,12 +86,21 @@ class Students with ChangeNotifier {
         var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
         print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
+          String date = element['brithDate'] ?? ' ';
+          var finaldate;
+          try {
+            finaldate = DateTime.parse(date).toString();
+          } catch (error) {
+            finaldate = null;
+          }
+
           _listStudent.add(Student(
-            id: element['id'],
-            lastName: element['firstName'],
-            email: element['firstName'],
-            firstName: element['firstName'],
-          ));
+              id: element['id'],
+              lastName: element['firstName'],
+              email: element['firstName'],
+              firstName: element['firstName'],
+              brithDate: finaldate));
+
           print(element['id']);
           print(element['firstName']);
         });
@@ -153,22 +163,28 @@ class Students with ChangeNotifier {
 
   addStudent(Student editeStudent) async {
     final url = Uri.http(basicUrl, '/students/new/');
+    String? formattedDate;
+    String? date;
+
+    if (editeStudent.brithDate == null) {
+      date = null;
+    } else {
+      date = DateFormat('yyyy-MM-dd').format(editeStudent.brithDate!);
+    }
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           'firstName': editeStudent.firstName,
+          'firstNames': editeStudent.firstName,
           'lastName': editeStudent.lastName,
           'email': editeStudent.email,
+          "birthDate": date,
         }),
       );
-      print(response.body);
-      print(json.encode({
-        'firstName': editeStudent.firstName,
-        'lastName': editeStudent.lastName,
-        'email': editeStudent.email,
-      }));
+      // print(response.body);
+
       notifyListeners();
     } catch (error) {
       print(error);

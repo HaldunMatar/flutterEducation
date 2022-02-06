@@ -55,30 +55,83 @@ class _GradeListViewState extends State<GradeListView> {
       // package takes care of that. If you want to customize them, use the
       // [PagedChildBuilderDelegate] properties.
       Scaffold(
-        appBar: AppBar(
-          title: Text('Grade List View'),
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-          ],
-        ),
-        drawer: AppDrawer(),
-        body: PagedListView<int, Grade>(
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Grade>(
-            itemBuilder: (context, item, index) => ListTile(
-              leading: CircleAvatar(
-                radius: 20,
-              ),
-              title: Text(item.nameEn),
-              subtitle: Text(item.id.toString()),
-              trailing: Icon(
-                Icons.person_remove,
-                color: Colors.red,
+          appBar: AppBar(
+            title: Text('Grade List View'),
+            actions: [
+              IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+            ],
+          ),
+          drawer: AppDrawer(),
+          body: PagedListView<int, Grade>(
+            pagingController: _pagingController,
+            builderDelegate: PagedChildBuilderDelegate<Grade>(
+              itemBuilder: (context, item, index) => ListTile(
+                leading: CircleAvatar(
+                  radius: 20,
+                ),
+                title: Text(item.nameEn),
+                subtitle: Text(item.id.toString()),
+                trailing: Icon(
+                  Icons.person_remove,
+                  color: Colors.red,
+                ),
               ),
             ),
           ),
-        ),
-      );
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+            //currentIndex: controller.currentIndex.value,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.category,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.category,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.settings,
+                  color: Colors.red,
+                ),
+                icon: Icon(
+                  Icons.settings,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+            ],
+            onTap: (index) {
+              // controller.currentIndex.value = index;
+            },
+          ));
 
   @override
   void dispose() {

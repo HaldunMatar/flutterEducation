@@ -2,6 +2,7 @@ import 'package:education/model/app_drawer.dart';
 import 'package:education/providers/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class StudenForm extends StatefulWidget {
@@ -17,8 +18,11 @@ class _StudenFormState extends State<StudenForm> {
   Student? _editeStudent;
 
   Future<void> _saveForm() async {
-    _editeStudent =
-        new Student(firstName: "dd", lastName: 'dfdfhd', email: 'ghjgf');
+    _editeStudent = new Student(
+        firstName: "dd",
+        lastName: 'dfdfhd',
+        email: 'ghjgf',
+        brithDate: DateTime.now());
     final isValid = _formKey.currentState?.validate();
     if (!isValid!) {
       return;
@@ -60,10 +64,10 @@ class _StudenFormState extends State<StudenForm> {
                 onSaved: (value) {
                   if (value != null) {
                     _editeStudent = Student(
-                      firstName: value,
-                      lastName: _editeStudent!.lastName,
-                      email: _editeStudent!.email.toString(),
-                    );
+                        firstName: value,
+                        lastName: _editeStudent!.lastName,
+                        email: _editeStudent!.email.toString(),
+                        brithDate: _editeStudent!.brithDate);
                   }
                 },
                 onFieldSubmitted: (value) {
@@ -81,10 +85,10 @@ class _StudenFormState extends State<StudenForm> {
                 onSaved: (value) {
                   if (value != null) {
                     _editeStudent = Student(
-                      firstName: _editeStudent!.firstName,
-                      lastName: value,
-                      email: _editeStudent!.email,
-                    );
+                        firstName: _editeStudent!.firstName,
+                        lastName: value,
+                        email: _editeStudent!.email,
+                        brithDate: _editeStudent!.brithDate);
                   }
                 },
                 onFieldSubmitted: (value) {
@@ -100,10 +104,20 @@ class _StudenFormState extends State<StudenForm> {
                   return null;
                 },
                 onSaved: (newValue) {
-                  print('onSaved');
+                  // print('updatedDt ' + newValue!);
+                  if (newValue != null && newValue != '') {
+                    _editeStudent = Student(
+                      brithDate: DateTime.parse(newValue),
+                      firstName: _editeStudent!.firstName,
+                      lastName: _editeStudent!.lastName,
+                      email: _editeStudent!.email,
+                    );
+                  }
                 },
                 onFieldSubmitted: (value) {
                   print('onFieldSubmitted');
+
+                  print('updatedDt ' + value);
                 },
                 decoration: InputDecoration(label: Text('Brith Date ')),
                 keyboardType: TextInputType.datetime,
@@ -117,10 +131,10 @@ class _StudenFormState extends State<StudenForm> {
                 onSaved: (value) {
                   if (value != null) {
                     _editeStudent = Student(
-                      firstName: _editeStudent!.firstName,
-                      lastName: _editeStudent!.lastName,
-                      email: value,
-                    );
+                        firstName: _editeStudent!.firstName,
+                        lastName: _editeStudent!.lastName,
+                        email: value,
+                        brithDate: _editeStudent!.brithDate);
                   }
                 },
                 onFieldSubmitted: (value) {

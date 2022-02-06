@@ -49,24 +49,100 @@ class _StudentListViewState extends State<StudentListView> {
       // package takes care of that. If you want to customize them, use the
       // [PagedChildBuilderDelegate] properties.
       Scaffold(
-        drawer: AppDrawer(),
-        body: PagedListView<int, Student>(
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Student>(
-            itemBuilder: (context, item, index) => ListTile(
-              leading: CircleAvatar(
-                radius: 20,
-              ),
-              title: Text(item.firstName),
-              subtitle: Text(item.id.toString()),
-              trailing: Icon(
-                Icons.person_remove,
-                color: Colors.red,
+          appBar: AppBar(
+            title: Text('Studet List View'),
+            actions: [
+              IconButton(onPressed: () {}, icon: Icon(Icons.search)),
+            ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(48.0),
+              child: Theme(
+                data: Theme.of(context).copyWith(accentColor: Colors.white),
+                child: Container(
+                  height: 48.0,
+                  alignment: Alignment.center,
+                  child: Container(
+                    color: Colors.white,
+                    child: TextField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      );
+          drawer: AppDrawer(),
+          body: PagedListView<int, Student>(
+            pagingController: _pagingController,
+            builderDelegate: PagedChildBuilderDelegate<Student>(
+              itemBuilder: (context, item, index) => ListTile(
+                leading: CircleAvatar(
+                  radius: 20,
+                ),
+                title: Text(item.firstName),
+                subtitle: Text(item.id.toString()),
+                trailing: Icon(
+                  Icons.person_remove,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+            //currentIndex: controller.currentIndex.value,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.home,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.category,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.category,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                icon: Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                activeIcon: Icon(
+                  Icons.settings,
+                  color: Colors.red,
+                ),
+                icon: Icon(
+                  Icons.settings,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                label: '',
+              ),
+            ],
+            onTap: (index) {
+              // controller.currentIndex.value = index;
+            },
+          ));
 
   @override
   void dispose() {
