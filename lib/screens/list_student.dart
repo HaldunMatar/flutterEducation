@@ -12,31 +12,35 @@ class StudentListView extends StatefulWidget {
 }
 
 class _StudentListViewState extends State<StudentListView> {
-  static const _pageSize = 20;
+  static const _pageSize = 5;
 
   final PagingController<int, Student> _pagingController =
       PagingController(firstPageKey: 0);
 
+  String? searchString = null;
+
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
-      _fetchPage(pageKey);
+      _fetchPage(pageKey, searchString);
     });
     super.initState();
   }
 
-  Future<void> _fetchPage(int pageKey) async {
+  Future<void> _fetchPage(int pageKey, String? searchString) async {
     try {
       final newItems = await Provider.of<Students>(context, listen: false)
-          .getStudentListByPage(pageKey, _pageSize);
+          .getStudentListByPage(pageKey, _pageSize, searchString);
       final isLastPage = newItems.length < _pageSize;
-
+      print(' _fetchPage  length is  ${newItems.length}');
       ;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
+        // _pagingController.refresh();
       } else {
         final int? nextPageKey = (pageKey + newItems.length) as int?;
         _pagingController.appendPage(newItems, nextPageKey);
+        // _pagingController.refresh();
       }
     } catch (error) {
       _pagingController.error = error;
@@ -66,6 +70,10 @@ class _StudentListViewState extends State<StudentListView> {
                     child: TextField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(),
+                      onChanged: (valu) {
+                        searchString = valu;
+                        seachStudent(valu);
+                      },
                     ),
                   ),
                 ),
@@ -148,5 +156,21 @@ class _StudentListViewState extends State<StudentListView> {
   void dispose() {
     _pagingController.dispose();
     super.dispose();
+  }
+
+  Future<void> seachStudent(String? seachStudent1) async {
+    try {
+      // _pagingController.refresh();
+      //_pagingController.refresh();
+      // searchString = 'Haldun';
+
+      _fetchPage(0, seachStudent1);
+      _pagingController.refresh();
+
+      setState(() {});
+    } catch (error) {
+      _pagingController.error = error;
+    }
+    print('searchString $seachStudent1');
   }
 }
