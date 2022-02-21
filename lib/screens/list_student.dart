@@ -38,7 +38,7 @@ class _StudentListViewState extends State<StudentListView> {
         _pagingController.appendLastPage(newItems);
         // _pagingController.refresh();
       } else {
-        final int? nextPageKey = (pageKey + newItems.length) as int?;
+        final int? nextPageKey = (pageKey + newItems.length);
         _pagingController.appendPage(newItems, nextPageKey);
         // _pagingController.refresh();
       }
@@ -98,7 +98,7 @@ class _StudentListViewState extends State<StudentListView> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             //currentIndex: controller.currentIndex.value,
             type: BottomNavigationBarType.fixed,
             items: [
@@ -166,7 +166,6 @@ class _StudentListViewState extends State<StudentListView> {
 
       _fetchPage(0, seachStudent1);
       _pagingController.refresh();
-
       setState(() {});
     } catch (error) {
       _pagingController.error = error;

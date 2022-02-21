@@ -32,6 +32,10 @@ dependencies:
   provider: ^6.0.1
   infinite_scroll_pagination: ^3.1.0
   intl: ^0.17.0
+  image_picker: ^0.8.4+8
+  path: ^1.8.0
+  validators: ^3.0.0
+
 
 dev_dependencies:
   flutter_test:

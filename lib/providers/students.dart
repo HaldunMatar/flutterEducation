@@ -14,8 +14,8 @@ import '../main.dart';
 
 class Students with ChangeNotifier {
   late Student currentStudent;
-  //static const basicUrl = '10.0.2.2:8080';
-  static const basicUrl = 'localhost:8080';
+  static const basicUrl = '10.0.2.2:8080';
+  // static const basicUrl = 'localhost:8080';
 
   List<Student> _listStudent = [];
   List<Grade> _listGrade = [];
@@ -69,6 +69,7 @@ class Students with ChangeNotifier {
   Future<List<Student>> fetchStudents() async {
     _listStudent = [];
     var url = Uri.http(basicUrl, '/students/allstudents/');
+
     List<Student>? res;
     try {
       print('length is');
@@ -124,7 +125,7 @@ class Students with ChangeNotifier {
         var itemCount = jsonResponRes.length;
         print('length is  $itemCount');
 
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
+        // var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
         //  print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           String date = element['brithDate'] ?? ' ';
@@ -203,6 +204,7 @@ class Students with ChangeNotifier {
   }
 
   addStudent(Student editeStudent) async {
+    print('addStudent');
     final url = Uri.http(basicUrl, '/students/new/');
     String? formattedDate;
     String? date;
@@ -212,19 +214,25 @@ class Students with ChangeNotifier {
     } else {
       date = DateFormat('yyyy-MM-dd').format(editeStudent.brithDate!);
     }
+
+    print(date.toString());
     try {
+      print(' before addStudent');
       final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept"
+        },
         body: json.encode({
           'firstName': editeStudent.firstName,
-          'firstNames': editeStudent.firstName,
           'lastName': editeStudent.lastName,
           'email': editeStudent.email,
           "birthDate": date,
         }),
       );
-      // print(response.body);
+      print(response.body);
 
       notifyListeners();
     } catch (error) {

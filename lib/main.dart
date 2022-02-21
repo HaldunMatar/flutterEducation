@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'screens/list_grade.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 
