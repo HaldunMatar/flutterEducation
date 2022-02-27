@@ -5,6 +5,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
 import '../model/grade.dart';
+import '../providers/grades.dart';
 
 class GradeListView extends StatefulWidget {
   static const routeName = '/GradeListView';
@@ -33,7 +34,7 @@ class _GradeListViewState extends State<GradeListView> {
 
     print('_fetchGradePage');
     try {
-      final newItems = await Provider.of<Students>(context, listen: false)
+      final newItems = await Provider.of<Grades>(context, listen: false)
           .getGradeListByPage(pageKey, _pageSize);
       final isLastPage = newItems.length < _pageSize;
 
@@ -72,7 +73,7 @@ class _GradeListViewState extends State<GradeListView> {
                 title: Text(item.nameEn),
                 subtitle: Text(item.id.toString()),
                 trailing: Icon(
-                  Icons.person_remove,
+                  Icons.chair,
                   color: Colors.red,
                 ),
               ),

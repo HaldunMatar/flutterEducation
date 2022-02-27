@@ -1,7 +1,8 @@
 import 'dart:io';
+import 'package:education/providers/grades.dart';
 import 'package:intl/intl.dart';
 import 'package:education/model/app_drawer.dart';
-import 'package:education/providers/student.dart';
+import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,8 @@ import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+import '../model/grade.dart';
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -21,9 +24,34 @@ class StudenForm extends StatefulWidget {
 }
 
 class _StudenFormState extends State<StudenForm> {
-  Student? _editeStudent;
+  Student? _editeStudent = new Student(
+      firstName: "dd",
+      lastName: 'dfdfhd',
+      email: 'ghjgf',
+      brithDate: DateTime.now());
   File? _imageFile;
   TextEditingController dateinput = TextEditingController();
+
+  List<Grade> itemsGrade = [];
+
+  var DropdownButtonGrade = null;
+  //Future<List<String>> items = await getGateList();
+  // ignore: unused_element
+
+  Future<void> getGradeList() async {
+    itemsGrade = await Provider.of<Grades>(context, listen: false)
+        .getGradeListByPage(0, 50);
+
+    // items = newItems.map((e) => e.nameAr).toList();
+  }
+
+  @override
+  void initState() {
+    // getGateList();
+    getGradeList();
+    super.initState();
+  }
+
   // ignore: unused_element
   Future<void> uploadImage(String inputSource) async {
     final picker = ImagePicker();
@@ -61,11 +89,12 @@ class _StudenFormState extends State<StudenForm> {
   //**************************************** */
 
   Future<void> _saveForm() async {
-    _editeStudent = new Student(
+    /* _editeStudent = new Student(
         firstName: "dd",
         lastName: 'dfdfhd',
         email: 'ghjgf',
-        brithDate: DateTime.now());
+        brithDate: DateTime.now());*/
+
     final isValid = _formKey.currentState?.validate();
     if (!isValid!) {
       return;
@@ -73,6 +102,7 @@ class _StudenFormState extends State<StudenForm> {
 
     _formKey.currentState?.save();
     if (_editeStudent != null) {
+      _editeStudent?.grade = 10;
       await Provider.of<Students>(context, listen: false)
           .addStudent(_editeStudent!);
     } else {}
@@ -126,7 +156,6 @@ class _StudenFormState extends State<StudenForm> {
                   },
                   keyboardType: TextInputType.number,
                 ),
-
                 TextFormField(
                   decoration: InputDecoration(label: Text('First Name ')),
                   validator: (value) {
@@ -231,7 +260,6 @@ class _StudenFormState extends State<StudenForm> {
                   },
                   keyboardType: TextInputType.text,
                 ),
-
                 TextFormField(
                   decoration: InputDecoration(label: Text(' TC ')),
                   validator: (value) {
@@ -316,7 +344,6 @@ class _StudenFormState extends State<StudenForm> {
                   },
                   onFieldSubmitted: (value) {
                     print('onFieldSubmitted');
-
                     print('updatedDt ' + value);
                   },
                   keyboardType: TextInputType.datetime,
@@ -341,7 +368,6 @@ class _StudenFormState extends State<StudenForm> {
                       ? null
                       : "Invalid Email",
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -384,7 +410,36 @@ class _StudenFormState extends State<StudenForm> {
                         )),
                   ],
                 ),
-                //  Image(image: FileImage(File(path))),
+                DropdownButton<Grade>(
+                    value: DropdownButtonGrade,
+                    icon: const Icon(Icons.arrow_downward, color: Colors.red),
+                    elevation: 16,
+                    // style: const TextStyle(color: Color.fromARGB(255, 5, 1, 0)),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.green,
+                    ),
+                    items:
+                        itemsGrade.map<DropdownMenuItem<Grade>>((Grade value) {
+                      print('itemsGrade =  $itemsGrade.length');
+                      return DropdownMenuItem<Grade>(
+                        value: value,
+                        child: Text(value.nameAr),
+                      );
+                    }).toList(),
+                    itemHeight: 50,
+                    onChanged: (value) {
+                      setState(() {
+                        DropdownButtonGrade = value;
+
+                        _editeStudent = Student(
+                            firstName: _editeStudent!.firstName,
+                            lastName: _editeStudent!.lastName,
+                            email: _editeStudent!.email,
+                            brithDate: _editeStudent!.brithDate,
+                            grade: value?.id);
+                      });
+                    })
               ],
             ),
           ),
