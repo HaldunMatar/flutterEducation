@@ -1,4 +1,5 @@
 import 'package:education/model/student.dart';
+import 'package:education/providers/grades.dart';
 import 'package:education/providers/students.dart';
 import 'package:education/screens/list_student.dart';
 import 'package:education/screens/student_form.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Students(),
         ),
+        ChangeNotifierProvider.value(value: Grades())
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

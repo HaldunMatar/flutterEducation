@@ -70,6 +70,9 @@ class _StudenFormState extends State<StudenForm> {
         print(_imageFile);
       });
 
+      await Provider.of<Students>(context, listen: false)
+          .uploadImage(_imageFile!);
+
       /*
       final String url = await Provider.of<Products>(context, listen: false)
           .storeIamge(imageFile);

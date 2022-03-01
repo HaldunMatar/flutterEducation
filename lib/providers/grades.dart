@@ -1,11 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:education/model/setting.dart';
+import 'package:flutter/material.dart';
+
+import 'package:http/http.dart' as http;
+
+import 'dart:convert' as convert;
 
 import '../model/grade.dart';
-import '../model/setting.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 class Grades with ChangeNotifier {
   List<Grade> _listGrade = [];
@@ -35,7 +37,7 @@ class Grades with ChangeNotifier {
         int i = 0;
         listquestion.forEach((element) {
           i = i + 1;
-          print('iiiiiiiiiiiiii   ${i}');
+          //  print('iiiiiiiiiiiiii   ${i}');
           _listGrade.add(Grade(
             id: element['id'],
             nameAr: element['nameAr'],

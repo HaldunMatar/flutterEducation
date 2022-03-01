@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,8 +10,6 @@ import 'package:education/model/student.dart';
 import 'package:intl/intl.dart';
 
 import 'dart:convert' as convert;
-
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class Students with ChangeNotifier {
   late Student currentStudent;
@@ -184,12 +183,47 @@ class Students with ChangeNotifier {
           "birthDate": date,
         }),
       );
+
       print(response.body);
 
       notifyListeners();
     } catch (error) {
       print(error);
       throw error;
+    }
+  }
+
+  /*Upload(File img) async {
+    var uri = Uri.parse('');
+
+    var request = new http.MultipartRequest("POST", uri);
+    request.files.add(new http.MultipartFile.fromBytes(
+        "file", img.readAsBytesSync(),
+        filename: "Photo.jpg", contentType: new MediaType("image", "jpg")));
+
+    var response = await request.send();
+    print(response.statusCode);
+    response.stream.transform(utf8.decoder).listen((value) {
+      print(value);
+    });
+  }*/
+
+// Upload camera photo to server
+  Future uploadImage(File image) async {
+    print('Image uploaded!');
+    final uri =
+        Uri.parse('http://' + Setting.basicUrl + "/students/storeImage");
+    var request = http.MultipartRequest('POST', uri);
+    print('Image uploaded!');
+    var takenPicture = await http.MultipartFile.fromPath("image", image.path);
+    request.files.add(takenPicture);
+    print('Image uploaded!');
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Image uploaded!');
+    } else {
+      print('Image not uploaded');
     }
   }
 }

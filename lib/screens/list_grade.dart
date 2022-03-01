@@ -1,5 +1,4 @@
 import 'package:education/model/app_drawer.dart';
-import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
