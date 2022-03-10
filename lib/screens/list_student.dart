@@ -61,7 +61,9 @@ class _StudentListViewState extends State<StudentListView> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(48.0),
               child: Theme(
-                data: Theme.of(context).copyWith(accentColor: Colors.white),
+                data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.fromSwatch()
+                        .copyWith(secondary: Colors.white)),
                 child: Container(
                   height: 48.0,
                   alignment: Alignment.center,

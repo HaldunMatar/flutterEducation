@@ -79,7 +79,7 @@ class _GradeListViewState extends State<GradeListView> {
             ),
           ),
           bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: Theme.of(context).colorScheme.primaryVariant,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             //currentIndex: controller.currentIndex.value,
             type: BottomNavigationBarType.fixed,
             items: [

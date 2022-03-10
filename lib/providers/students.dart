@@ -24,20 +24,18 @@ class Students with ChangeNotifier {
   Future<List<Student>> serachStudent(String stringSearch) async {
     // _listStudent = [];
     var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
-    List<Student>? res;
+
     try {
       print('length is');
       var responRes = await http.get(url);
 
       if (responRes.statusCode == 200) {
-        const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
         print('length is  $itemCount');
 
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
         print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
@@ -66,21 +64,18 @@ class Students with ChangeNotifier {
     _listStudent = [];
     var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
 
-    List<Student>? res;
     try {
       //
       // print('length is');
       var responRes = await http.get(url);
 
       if (responRes.statusCode == 200) {
-        const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
         print('length is  $itemCount');
 
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
         // print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
@@ -110,7 +105,6 @@ class Students with ChangeNotifier {
     print(url.toString());
     _listStudent = [];
 
-    List<Student>? res;
     try {
       var responRes = await http.get(url);
 
@@ -155,9 +149,9 @@ class Students with ChangeNotifier {
   }
 
   addStudent(Student editeStudent) async {
-    print('addStudent');
+    // print('addStudent');
     final url = Uri.http(Setting.basicUrl, '/students/new/');
-    String? formattedDate;
+
     String? date;
 
     if (editeStudent.brithDate == null) {
@@ -181,6 +175,8 @@ class Students with ChangeNotifier {
           'lastName': editeStudent.lastName,
           'email': editeStudent.email,
           "birthDate": date,
+          "grade": editeStudent.grade,
+          "imageuri": editeStudent.imageuri,
         }),
       );
 
@@ -193,37 +189,23 @@ class Students with ChangeNotifier {
     }
   }
 
-  /*Upload(File img) async {
-    var uri = Uri.parse('');
-
-    var request = new http.MultipartRequest("POST", uri);
-    request.files.add(new http.MultipartFile.fromBytes(
-        "file", img.readAsBytesSync(),
-        filename: "Photo.jpg", contentType: new MediaType("image", "jpg")));
-
-    var response = await request.send();
-    print(response.statusCode);
-    response.stream.transform(utf8.decoder).listen((value) {
-      print(value);
-    });
-  }*/
-
 // Upload camera photo to server
   Future uploadImage(File image) async {
-    print('Image uploaded!');
-    final uri =
-        Uri.parse('http://' + Setting.basicUrl + "/students/storeImage");
-    var request = http.MultipartRequest('POST', uri);
-    print('Image uploaded!');
+    // print('Image uploaded!');
+    final url = Uri.http(Setting.basicUrl, "/students/storeImage");
+    var request = http.MultipartRequest('POST', url);
+    // print('Image uploaded!');
     var takenPicture = await http.MultipartFile.fromPath("image", image.path);
     request.files.add(takenPicture);
+
     print('Image uploaded!');
 
     var response = await request.send();
+
     if (response.statusCode == 200) {
-      print('Image uploaded!');
+      print('Image  Student is uploaded!');
     } else {
-      print('Image not uploaded');
+      print('Image Student  not uploaded');
     }
   }
 }

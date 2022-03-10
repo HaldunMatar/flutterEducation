@@ -8,6 +8,8 @@ class Student with ChangeNotifier {
   DateTime? brithDate;
   int? grade;
 
+  String? imageuri;
+
   Student({
     this.id,
     required this.firstName,

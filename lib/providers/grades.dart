@@ -15,11 +15,10 @@ class Grades with ChangeNotifier {
   Future<List<Grade>> getGradeListByPage(int pageKey, int pageSize) async {
     var url =
         Uri.http(Setting.basicUrl, '/grades/gradespage/$pageKey/$pageSize');
-    print('length Grade Grade Grade Grade Grade Grade ');
-    print(url.toString());
+    // print('length Grade Grade Grade Grade Grade Grade ');
+    // print(url.toString());
     _listGrade = [];
 
-    List<Grade>? res;
     try {
       var responRes = await http.get(url);
 

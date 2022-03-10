@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:education/model/setting.dart';
 import 'package:education/providers/grades.dart';
 import 'package:intl/intl.dart';
 import 'package:education/model/app_drawer.dart';
@@ -41,7 +42,6 @@ class _StudenFormState extends State<StudenForm> {
   Future<void> getGradeList() async {
     itemsGrade = await Provider.of<Grades>(context, listen: false)
         .getGradeListByPage(0, 50);
-
     // items = newItems.map((e) => e.nameAr).toList();
   }
 
@@ -49,43 +49,42 @@ class _StudenFormState extends State<StudenForm> {
   void initState() {
     // getGateList();
     getGradeList();
+
     super.initState();
   }
 
-  // ignore: unused_element
-  Future<void> uploadImage(String inputSource) async {
+  Future<void> takeImage(String inputSource) async {
     final picker = ImagePicker();
-    PickedFile pickedImage;
     try {
       XFile? pickedImage = await picker.pickImage(
           source: inputSource == 'camera'
               ? ImageSource.camera
               : ImageSource.gallery);
 
-      final String fileName = path.basename(pickedImage!.path);
+      path.basename(pickedImage!.path);
       // _imageFile = File(pickedImage.path);
 
       setState(() {
         _imageFile = File(pickedImage.path);
-        print(_imageFile);
+        _editeStudent?.imageuri = path.basename(pickedImage.path);
+
+        print(_editeStudent?.imageuri);
+        //print(path.basename(pickedImage.path));
       });
-
-      await Provider.of<Students>(context, listen: false)
-          .uploadImage(_imageFile!);
-
-      /*
-      final String url = await Provider.of<Products>(context, listen: false)
-          .storeIamge(imageFile);
-
-      _imageUrlController.text = url;
-
-      setState(() {});
-
-      // Refresh the UI
-    */
-
     } on Exception catch (error) {
-      print(error);
+      print(" you do do not take image correctly  $error.toString() ");
+    }
+  }
+
+  // ignore: unused_element
+  Future<void> uploadImage() async {
+    try {
+      _imageFile != null
+          ? await Provider.of<Students>(context, listen: false)
+              .uploadImage(_imageFile!)
+          : null;
+    } on Exception catch (error) {
+      print(" Image can not sore o server $error.toString() ");
     }
   }
 
@@ -105,7 +104,10 @@ class _StudenFormState extends State<StudenForm> {
 
     _formKey.currentState?.save();
     if (_editeStudent != null) {
-      _editeStudent?.grade = 10;
+      await uploadImage();
+      _editeStudent?.imageuri =
+          Setting.basicUrl + '\\uploads' + path.basename(_imageFile!.path);
+      // _editeStudent?.grade = 10;
       await Provider.of<Students>(context, listen: false)
           .addStudent(_editeStudent!);
     } else {}
@@ -135,13 +137,6 @@ class _StudenFormState extends State<StudenForm> {
                 TextFormField(
                   decoration:
                       InputDecoration(label: Center(child: Text(' ID '))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter DI ';
-                    }
-                    print('onField validator   ID  ');
-                    return null;
-                  },
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
                     if (value != null || value!.isNotEmpty) {
@@ -175,6 +170,7 @@ class _StudenFormState extends State<StudenForm> {
                           firstName: value,
                           lastName: _editeStudent!.lastName,
                           email: _editeStudent!.email.toString(),
+                          grade: _editeStudent!.grade,
                           brithDate: _editeStudent!.brithDate);
                     }
 
@@ -200,6 +196,7 @@ class _StudenFormState extends State<StudenForm> {
                       _editeStudent = Student(
                           firstName: value,
                           lastName: _editeStudent!.lastName,
+                          grade: _editeStudent!.grade,
                           email: _editeStudent!.email.toString(),
                           brithDate: _editeStudent!.brithDate);
                     }
@@ -342,6 +339,7 @@ class _StudenFormState extends State<StudenForm> {
                         firstName: _editeStudent!.firstName,
                         lastName: _editeStudent!.lastName,
                         email: _editeStudent!.email,
+                        grade: _editeStudent!.grade,
                       );
                     }
                   },
@@ -359,6 +357,7 @@ class _StudenFormState extends State<StudenForm> {
                       _editeStudent = Student(
                           firstName: _editeStudent!.firstName,
                           lastName: _editeStudent!.lastName,
+                          grade: _editeStudent!.grade,
                           email: value,
                           brithDate: _editeStudent!.brithDate);
                     }
@@ -375,37 +374,39 @@ class _StudenFormState extends State<StudenForm> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Center(
-                        child: Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                          gradient: LinearGradient(
-                              colors: [Colors.green, Colors.orange],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight)),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          clipBehavior: Clip.hardEdge,
-                          child: _imageFile != null
-                              ? kIsWeb
-                                  ? Image.network(
-                                      _imageFile!.path,
-                                      fit: BoxFit.fill,
-                                      // width: 75,
-                                      // height: 75,
-                                    )
-                                  : Image.file(
-                                      _imageFile!,
-                                      fit: BoxFit.fill,
-                                      // width: 75,
-                                      // height: 75,
-                                    )
-                              : null),
-                    )),
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100)),
+                            gradient: LinearGradient(
+                                colors: [Colors.green, Colors.orange],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight)),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            clipBehavior: Clip.hardEdge,
+                            child: _imageFile != null
+                                ? kIsWeb
+                                    ? Image.network(
+                                        'http://10.0.2.2:8080/111.jpg',
+                                        fit: BoxFit.fill,
+                                        // width: 75,
+                                        // height: 75,
+                                      )
+                                    : Image.file(
+                                        _imageFile!,
+                                        fit: BoxFit.fill,
+                                        // width: 75,
+                                        // height: 75,
+                                      )
+                                : null),
+                      ),
+                    ),
                     IconButton(
                         onPressed: () async {
-                          uploadImage('camera');
+                          takeImage('camera');
                         },
                         icon: Icon(
                           Icons.camera_alt,
@@ -424,7 +425,7 @@ class _StudenFormState extends State<StudenForm> {
                     ),
                     items:
                         itemsGrade.map<DropdownMenuItem<Grade>>((Grade value) {
-                      print('itemsGrade =  $itemsGrade.length');
+                      print('itemsGrade is  =  $itemsGrade.length');
                       return DropdownMenuItem<Grade>(
                         value: value,
                         child: Text(value.nameAr),
@@ -432,9 +433,10 @@ class _StudenFormState extends State<StudenForm> {
                     }).toList(),
                     itemHeight: 50,
                     onChanged: (value) {
+                      print('grad id  =  $value');
                       setState(() {
                         DropdownButtonGrade = value;
-
+                        print('grad id  =  {$value.id}');
                         _editeStudent = Student(
                             firstName: _editeStudent!.firstName,
                             lastName: _editeStudent!.lastName,
