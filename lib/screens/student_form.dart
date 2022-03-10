@@ -77,7 +77,7 @@ class _StudenFormState extends State<StudenForm> {
   }
 
   // ignore: unused_element
-  Future<void> uploadImage() async {
+  /* Future<void> uploadImage() async {
     try {
       _imageFile != null
           ? await Provider.of<Students>(context, listen: false)
@@ -86,7 +86,7 @@ class _StudenFormState extends State<StudenForm> {
     } on Exception catch (error) {
       print(" Image can not sore o server $error.toString() ");
     }
-  }
+  }*/
 
   //**************************************** */
 
@@ -104,12 +104,11 @@ class _StudenFormState extends State<StudenForm> {
 
     _formKey.currentState?.save();
     if (_editeStudent != null) {
-      await uploadImage();
       _editeStudent?.imageuri =
           Setting.basicUrl + '\\uploads' + path.basename(_imageFile!.path);
       // _editeStudent?.grade = 10;
       await Provider.of<Students>(context, listen: false)
-          .addStudent(_editeStudent!);
+          .addStudent(_editeStudent!, _imageFile!);
     } else {}
   }
 

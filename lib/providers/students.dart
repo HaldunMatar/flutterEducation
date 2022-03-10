@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:education/model/student.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path1;
 
 import 'dart:convert' as convert;
 
@@ -148,7 +149,7 @@ class Students with ChangeNotifier {
     return _listStudent;
   }
 
-  addStudent(Student editeStudent) async {
+  addStudent(Student editeStudent, File image) async {
     // print('addStudent');
     final url = Uri.http(Setting.basicUrl, '/students/new/');
 
@@ -180,7 +181,17 @@ class Students with ChangeNotifier {
         }),
       );
 
-      print(response.body);
+      // print(response.body);
+
+      final parsed = jsonDecode(response.body);
+      print(parsed);
+      try {
+        image != null
+            ? await uploadImage(image, parsed['id'].toString())
+            : null;
+      } on Exception catch (error) {
+        print(" Image can not sore o server $error.toString() ");
+      }
 
       notifyListeners();
     } catch (error) {
@@ -190,12 +201,23 @@ class Students with ChangeNotifier {
   }
 
 // Upload camera photo to server
-  Future uploadImage(File image) async {
+  Future uploadImage(File image, String parse) async {
     // print('Image uploaded!');
     final url = Uri.http(Setting.basicUrl, "/students/storeImage");
     var request = http.MultipartRequest('POST', url);
-    // print('Image uploaded!');
-    var takenPicture = await http.MultipartFile.fromPath("image", image.path);
+    print(parse);
+    print(image);
+
+    print('Original path: ${image.path}');
+    String dir = path1.dirname(image.path);
+    String newPath = path1.join(dir, '$parse.jpg');
+    print('NewPath: ${newPath}');
+    print(image.path);
+    image.renameSync(newPath);
+
+    //await image.rename(parse);
+    print(image.path);
+    var takenPicture = await http.MultipartFile.fromPath("image", newPath);
     request.files.add(takenPicture);
 
     print('Image uploaded!');
