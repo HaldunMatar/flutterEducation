@@ -203,7 +203,7 @@ class Students with ChangeNotifier {
 // Upload camera photo to server
   Future uploadImage(File image, String parse) async {
     // print('Image uploaded!');
-    final url = Uri.http(Setting.basicUrl, "/students/storeImage");
+    final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
     var request = http.MultipartRequest('POST', url);
     print(parse);
     print(image);
@@ -211,13 +211,16 @@ class Students with ChangeNotifier {
     print('Original path: ${image.path}');
     String dir = path1.dirname(image.path);
     String newPath = path1.join(dir, '$parse.jpg');
+
     print('NewPath: ${newPath}');
     print(image.path);
-    image.renameSync(newPath);
+    // image.renameSync(newPath);
+    File newImage = await image.copy(newPath);
 
-    //await image.rename(parse);
-    print(image.path);
-    var takenPicture = await http.MultipartFile.fromPath("image", newPath);
+    // await image.rename(newPath);
+    print(newImage.path);
+    var takenPicture =
+        await http.MultipartFile.fromPath("file", newImage.path.toString());
     request.files.add(takenPicture);
 
     print('Image uploaded!');
