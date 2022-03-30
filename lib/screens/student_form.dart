@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:education/model/setting.dart';
 import 'package:education/providers/grades.dart';
 import 'package:intl/intl.dart';
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../model/grade.dart';
+import 'list_student.dart';
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -76,27 +78,7 @@ class _StudenFormState extends State<StudenForm> {
     }
   }
 
-  // ignore: unused_element
-  /* Future<void> uploadImage() async {
-    try {
-      _imageFile != null
-          ? await Provider.of<Students>(context, listen: false)
-              .uploadImage(_imageFile!)
-          : null;
-    } on Exception catch (error) {
-      print(" Image can not sore o server $error.toString() ");
-    }
-  }*/
-
-  //**************************************** */
-
   Future<void> _saveForm() async {
-    /* _editeStudent = new Student(
-        firstName: "dd",
-        lastName: 'dfdfhd',
-        email: 'ghjgf',
-        brithDate: DateTime.now());*/
-
     final isValid = _formKey.currentState?.validate();
     if (!isValid!) {
       return;
@@ -105,11 +87,37 @@ class _StudenFormState extends State<StudenForm> {
     _formKey.currentState?.save();
     if (_editeStudent != null) {
       _editeStudent?.imageuri =
-          Setting.basicUrl + '\\uploads' + path.basename(_imageFile!.path);
-      // _editeStudent?.grade = 10;
+          Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
+
       await Provider.of<Students>(context, listen: false)
           .addStudent(_editeStudent!, _imageFile!);
-    } else {}
+    } else {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.BOTTOMSLIDE,
+        title: 'ERROR',
+        desc: 'Student has not  inserted.',
+        btnOkOnPress: () {
+          //Navigator.pop(context);
+
+          // Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+        },
+      ).show();
+    }
+
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.INFO,
+      animType: AnimType.BOTTOMSLIDE,
+      title: 'Success',
+      desc: 'New Student has inserted.',
+      btnOkOnPress: () {
+        //Navigator.pop(context);
+
+        Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+      },
+    ).show();
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -134,17 +142,12 @@ class _StudenFormState extends State<StudenForm> {
             child: ListView(
               children: <Widget>[
                 TextFormField(
+                  readOnly: true,
                   decoration:
                       InputDecoration(label: Center(child: Text(' ID '))),
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
-                    if (value != null || value!.isNotEmpty) {
-                      /*_editeStudent = Student(
-                          firstName: value,
-                          lastName: _editeStudent!.lastName,
-                          email: _editeStudent!.email.toString(),
-                          brithDate: _editeStudent!.brithDate);*/
-                    }
+                    if (value != null || value!.isNotEmpty) {}
 
                     print('onField onSaved  ID  ');
                   },
@@ -384,24 +387,27 @@ class _StudenFormState extends State<StudenForm> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight)),
                         child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            clipBehavior: Clip.hardEdge,
-                            child: _imageFile != null
-                                ? kIsWeb
-                                    ? Image.network(
-                                        'http://10.0.2.2:8080/111.jpg',
-                                        fit: BoxFit.fill,
-                                        // width: 75,
-                                        // height: 75,
-                                      )
-                                    : Image.file(
-                                        _imageFile!,
-                                        fit: BoxFit.fill,
-                                        // width: 75,
-                                        // height: 75,
-                                      )
-                                : Image.network(
-                                    'http://${Setting.basicUrl}/downloadFile/person.png')),
+                          borderRadius: BorderRadius.circular(8.0),
+                          clipBehavior: Clip.hardEdge,
+                          child: _imageFile != null
+                              ? kIsWeb
+                                  ? Image.network(
+                                      'http://10.0.2.2:8080/111.jpg',
+                                      fit: BoxFit.fill,
+                                      // width: 75,
+                                      // height: 75,
+                                    )
+                                  : Image.file(
+                                      _imageFile!,
+                                      fit: BoxFit.fill,
+                                      // width: 75,
+                                      // height: 75,
+                                    )
+                              : Image.network(
+                                  'http://${Setting.basicUrl}/downloadFile/person.png',
+                                  fit: BoxFit.fill,
+                                ),
+                        ),
                       ),
                     ),
                     IconButton(

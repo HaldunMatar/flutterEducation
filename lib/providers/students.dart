@@ -101,8 +101,14 @@ class Students with ChangeNotifier {
 
   Future<List<Student>> getStudentListByPage(
       int pagkey, int num, String? searchString) async {
-    var url = Uri.http(Setting.basicUrl,
-        '/students/studentspage/ ${pagkey.toString()}/ ${num.toString()}/${searchString}');
+    Map<String, String> queryParameters = {
+      "searchString": searchString == null ? "" : searchString
+    };
+
+    var url = Uri.http(
+        Setting.basicUrl,
+        '/students/studentspage/ ${pagkey.toString()}/ ${num.toString()}',
+        queryParameters);
     print(url.toString());
     _listStudent = [];
 
@@ -183,15 +189,18 @@ class Students with ChangeNotifier {
 
       // print(response.body);
 
-      final parsed = jsonDecode(response.body);
-      print(parsed);
-      try {
-        image != null
-            ? await uploadImage(image, parsed['id'].toString())
-            : null;
-      } on Exception catch (error) {
-        print(" Image can not sore o server $error.toString() ");
-      }
+      if (response.statusCode == 200) {
+        final parsed = jsonDecode(response.body);
+        print(parsed);
+        try {
+          image != null
+              ? await uploadImage(image, parsed['id'].toString())
+              : null;
+        } on Exception catch (error) {
+          print(" Image can not sore o server $error.toString() ");
+        }
+      } else
+        throw Exception('Ithere is problem  in  request or response ');
 
       notifyListeners();
     } catch (error) {
@@ -205,8 +214,8 @@ class Students with ChangeNotifier {
     // print('Image uploaded!');
     final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
     var request = http.MultipartRequest('POST', url);
-    print(parse);
-    print(image);
+    //print(parse);
+    //print(image);
 
     print('Original path: ${image.path}');
     String dir = path1.dirname(image.path);
