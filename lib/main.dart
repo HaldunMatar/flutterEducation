@@ -30,6 +30,9 @@ class MyApp extends StatelessWidget {
           title: 'Education System',
           theme: ThemeData(
             primarySwatch: Colors.teal,
+            colorScheme: Theme.of(context)
+                .colorScheme
+                .copyWith(secondary: Color.fromARGB(255, 70, 244, 54)),
           ),
           initialRoute: '/',
           routes: {

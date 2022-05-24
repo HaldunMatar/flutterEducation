@@ -16,11 +16,18 @@ class Grades with ChangeNotifier {
     var url =
         Uri.http(Setting.basicUrl, '/grades/gradespage/$pageKey/$pageSize');
     // print('length Grade Grade Grade Grade Grade Grade ');
-    // print(url.toString());
+    print(url.toString());
     _listGrade = [];
 
     try {
-      var responRes = await http.get(url);
+      var responRes = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept"
+        },
+      );
 
       if (responRes.statusCode == 200) {
         const Utf8Codec utf8 = Utf8Codec();

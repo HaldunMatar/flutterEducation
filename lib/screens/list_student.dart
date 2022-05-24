@@ -168,17 +168,9 @@ class _StudentListViewState extends State<StudentListView> {
 
   Future<void> seachStudent(String? seachStudent1) async {
     try {
-      // _pagingController.refresh();
-      //_pagingController.refresh();
-      // searchString = 'Haldun';
-
-      // _fetchPage(0, seachStudent1);
-
       _pagingController.refresh();
-      //setState(() {});
     } catch (error) {
       _pagingController.error = error;
     }
-    print('searchString $seachStudent1');
   }
 }

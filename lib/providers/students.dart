@@ -170,6 +170,8 @@ class Students with ChangeNotifier {
     print(date.toString());
     try {
       print(' before addStudent');
+      //  print(editeStudent.);
+
       final response = await http.post(
         url,
         headers: {
@@ -183,12 +185,12 @@ class Students with ChangeNotifier {
           'email': editeStudent.email,
           "birthDate": date,
           "grade": editeStudent.grade,
+          //  "grade": 4,
           "imageuri": editeStudent.imageuri,
         }),
       );
-
-      // print(response.body);
-
+      print(editeStudent.toString());
+      print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         print(parsed);

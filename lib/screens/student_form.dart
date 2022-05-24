@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:education/model/setting.dart';
 import 'package:education/providers/grades.dart';
@@ -32,6 +33,9 @@ class _StudenFormState extends State<StudenForm> {
       lastName: 'dfdfhd',
       email: 'ghjgf',
       brithDate: DateTime.now());
+  File _file = File("zz");
+
+  Uint8List webImage = Uint8List(10);
   File? _imageFile;
   TextEditingController dateinput = TextEditingController();
 
@@ -56,6 +60,8 @@ class _StudenFormState extends State<StudenForm> {
   }
 
   Future<void> takeImage(String inputSource) async {
+    print('takeImage takeImage takeImage takeImage');
+
     final picker = ImagePicker();
     try {
       XFile? pickedImage = await picker.pickImage(
@@ -63,13 +69,24 @@ class _StudenFormState extends State<StudenForm> {
               ? ImageSource.camera
               : ImageSource.gallery);
 
+      var f = await pickedImage?.readAsBytes();
+
+//************************** */
+
+//***********************
+// */
+
       path.basename(pickedImage!.path);
       // _imageFile = File(pickedImage.path);
 
       setState(() {
-        _imageFile = File(pickedImage.path);
-        _editeStudent?.imageuri = path.basename(pickedImage.path);
+        webImage = f!;
 
+        _imageFile = File(pickedImage.path);
+        print(pickedImage.path);
+        _editeStudent?.imageuri = path.basename(pickedImage.path);
+        print(
+            'ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg');
         print(_editeStudent?.imageuri);
         //print(path.basename(pickedImage.path));
       });
@@ -149,10 +166,10 @@ class _StudenFormState extends State<StudenForm> {
                   onSaved: (value) {
                     if (value != null || value!.isNotEmpty) {}
 
-                    print('onField onSaved  ID  ');
+                    //  print('onField onSaved  ID  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted ID');
+                    //  print('onFieldSubmitted ID');
                   },
                   keyboardType: TextInputType.number,
                 ),
@@ -162,7 +179,7 @@ class _StudenFormState extends State<StudenForm> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter First Name ';
                     }
-                    print('onField validator   First Name  ');
+                    // print('onField validator   First Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -176,10 +193,10 @@ class _StudenFormState extends State<StudenForm> {
                           brithDate: _editeStudent!.brithDate);
                     }
 
-                    print('onField onSaved  First Name  ');
+                    //('onField onSaved  First Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted First Name');
+                    //  print('onFieldSubmitted First Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
@@ -206,7 +223,7 @@ class _StudenFormState extends State<StudenForm> {
                     print('onField onSaved  Last Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted Last Name');
+                    // print('onFieldSubmitted Last Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
@@ -216,7 +233,7 @@ class _StudenFormState extends State<StudenForm> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter fathr Name ';
                     }
-                    print('onField validator   fathr Name  ');
+                    //  print('onField validator   fathr Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -232,7 +249,7 @@ class _StudenFormState extends State<StudenForm> {
                     print('onField onSaved  fathr Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted fathr Name');
+                    // print('onFieldSubmitted fathr Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
@@ -242,7 +259,7 @@ class _StudenFormState extends State<StudenForm> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter Mother Name ';
                     }
-                    print('onField validator   Mother Name  ');
+                    // print('onField validator   Mother Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -255,10 +272,10 @@ class _StudenFormState extends State<StudenForm> {
                           brithDate: _editeStudent!.brithDate);*/
                     }
 
-                    print('onField onSaved  Mother Name  ');
+                    // print('onField onSaved  Mother Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted Mother Name');
+                    //  print('onFieldSubmitted Mother Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
@@ -268,7 +285,7 @@ class _StudenFormState extends State<StudenForm> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter TC ';
                     }
-                    print('onField validator   TC  ');
+                    //  print('onField validator   TC  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -281,10 +298,10 @@ class _StudenFormState extends State<StudenForm> {
                           brithDate: _editeStudent!.brithDate);*/
                     }
 
-                    print('onField onSaved  TC  ');
+                    //print('onField onSaved  TC  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted TC');
+                    // print('onFieldSubmitted TC');
                   },
                   keyboardType: TextInputType.number,
                 ),
@@ -314,8 +331,8 @@ class _StudenFormState extends State<StudenForm> {
                           pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                       String formattedDate =
                           DateFormat('yyyy-MM-dd').format(pickedDate);
-                      print(
-                          formattedDate); //formatted date output using intl package =>  2021-03-16
+                      //  print(
+                      //     formattedDate); //formatted date output using intl package =>  2021-03-16
                       //you can implement different kind of Date Format here according to your requirement
 
                       setState(() {
@@ -323,7 +340,7 @@ class _StudenFormState extends State<StudenForm> {
                             formattedDate; //set output date to TextField value.
                       });
                     } else {
-                      print("Date is not selected");
+                      //  print("Date is not selected");
                     }
                   },
                   validator: (value) {
@@ -346,8 +363,8 @@ class _StudenFormState extends State<StudenForm> {
                     }
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted');
-                    print('updatedDt ' + value);
+                    //    print('onFieldSubmitted');
+                    //  print('updatedDt ' + value);
                   },
                   keyboardType: TextInputType.datetime,
                 ),
@@ -365,7 +382,7 @@ class _StudenFormState extends State<StudenForm> {
                     }
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted');
+                    //  print('onFieldSubmitted');
                   },
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) => val == null || val.isEmpty || isEmail(val)
@@ -391,12 +408,10 @@ class _StudenFormState extends State<StudenForm> {
                           clipBehavior: Clip.hardEdge,
                           child: _imageFile != null
                               ? kIsWeb
-                                  ? Image.network(
-                                      'http://10.0.2.2:8080/111.jpg',
+                                  ? Image.memory(
+                                      webImage,
                                       fit: BoxFit.fill,
-                                      // width: 75,
-                                      // height: 75,
-                                    )
+                                    ) //
                                   : Image.file(
                                       _imageFile!,
                                       fit: BoxFit.fill,
@@ -412,7 +427,10 @@ class _StudenFormState extends State<StudenForm> {
                     ),
                     IconButton(
                         onPressed: () async {
-                          takeImage('camera');
+                          takeImage(Theme.of(context).platform ==
+                                  TargetPlatform.android
+                              ? 'camera'
+                              : 'gallery');
                         },
                         icon: Icon(
                           Icons.camera_alt,
@@ -431,7 +449,7 @@ class _StudenFormState extends State<StudenForm> {
                     ),
                     items:
                         itemsGrade.map<DropdownMenuItem<Grade>>((Grade value) {
-                      print('itemsGrade is  =  $itemsGrade.length');
+                      //  print('itemsGrade is  =  $itemsGrade.length');
                       return DropdownMenuItem<Grade>(
                         value: value,
                         child: Text(value.nameAr),
@@ -439,10 +457,10 @@ class _StudenFormState extends State<StudenForm> {
                     }).toList(),
                     itemHeight: 50,
                     onChanged: (value) {
-                      print('grad id  =  $value');
+                      // print('grad id  =  $value');
                       setState(() {
                         DropdownButtonGrade = value;
-                        print('grad id  =  {$value.id}');
+                        //    print('grad id  =  {$value.id}');
                         _editeStudent = Student(
                             firstName: _editeStudent!.firstName,
                             lastName: _editeStudent!.lastName,
@@ -522,5 +540,3 @@ String? validateEmail(String? value) {
     else
       return null;
   }*/
-
-
