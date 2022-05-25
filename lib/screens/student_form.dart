@@ -37,6 +37,7 @@ class _StudenFormState extends State<StudenForm> {
 
   Uint8List webImage = Uint8List(10);
   File? _imageFile;
+  late Image image;
   TextEditingController dateinput = TextEditingController();
 
   List<Grade> itemsGrade = [];
@@ -63,6 +64,7 @@ class _StudenFormState extends State<StudenForm> {
     print('takeImage takeImage takeImage takeImage');
 
     final picker = ImagePicker();
+
     try {
       XFile? pickedImage = await picker.pickImage(
           source: inputSource == 'camera'
@@ -70,6 +72,12 @@ class _StudenFormState extends State<StudenForm> {
               : ImageSource.gallery);
 
       var f = await pickedImage?.readAsBytes();
+
+      if (kIsWeb) {
+        image = Image.network(pickedImage!.path);
+      } else {
+        image = Image.file(File(pickedImage!.path));
+      }
 
 //************************** */
 
@@ -107,7 +115,7 @@ class _StudenFormState extends State<StudenForm> {
           Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
 
       await Provider.of<Students>(context, listen: false)
-          .addStudent(_editeStudent!, _imageFile!);
+          .addStudent(_editeStudent!, _imageFile!, image);
     } else {
       AwesomeDialog(
         context: context,
@@ -174,6 +182,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('First Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -201,6 +210,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'Matar',
                   decoration: InputDecoration(label: Text('Last Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -228,6 +238,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('fathr Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -254,6 +265,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('Mother Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -280,6 +292,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: '8545251451',
                   decoration: InputDecoration(label: Text(' TC ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -306,6 +319,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
+                  // initialValue: '22-05-2022',
                   controller: dateinput,
                   // decoration: InputDecoration(label: Text('Brith Date ')),
                   textInputAction: TextInputAction.next,
@@ -369,6 +383,7 @@ class _StudenFormState extends State<StudenForm> {
                   keyboardType: TextInputType.datetime,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN@dgd.com',
                   decoration: InputDecoration(label: Text('Email ')),
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
