@@ -1,5 +1,6 @@
 import 'package:education/model/app_drawer.dart';
-import 'package:education/providers/student.dart';
+import 'package:education/model/setting.dart';
+import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -12,7 +13,7 @@ class StudentListView extends StatefulWidget {
 }
 
 class _StudentListViewState extends State<StudentListView> {
-  static const _pageSize = 5;
+  static const _pageSize = 2;
 
   final PagingController<int, Student> _pagingController =
       PagingController(firstPageKey: 0);
@@ -31,6 +32,8 @@ class _StudentListViewState extends State<StudentListView> {
     try {
       final newItems = await Provider.of<Students>(context, listen: false)
           .getStudentListByPage(pageKey, _pageSize, searchString);
+
+      print('items from fettchpage methode   ${newItems.length}');
       final isLastPage = newItems.length < _pageSize;
       print(' _fetchPage  length is  ${newItems.length}');
       ;
@@ -61,7 +64,9 @@ class _StudentListViewState extends State<StudentListView> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(48.0),
               child: Theme(
-                data: Theme.of(context).copyWith(accentColor: Colors.white),
+                data: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.fromSwatch()
+                        .copyWith(secondary: Colors.white)),
                 child: Container(
                   height: 48.0,
                   alignment: Alignment.center,
@@ -86,7 +91,10 @@ class _StudentListViewState extends State<StudentListView> {
             builderDelegate: PagedChildBuilderDelegate<Student>(
               itemBuilder: (context, item, index) => ListTile(
                 leading: CircleAvatar(
-                  radius: 20,
+                  radius: 30,
+                  backgroundImage: NetworkImage(
+                    'http://${Setting.basicUrl}/downloadFile/${item.id}.jpg',
+                  ),
                 ),
                 title: Text(item.firstName),
                 subtitle: Text(item.id.toString()),
@@ -160,16 +168,9 @@ class _StudentListViewState extends State<StudentListView> {
 
   Future<void> seachStudent(String? seachStudent1) async {
     try {
-      // _pagingController.refresh();
-      //_pagingController.refresh();
-      // searchString = 'Haldun';
-
-      _fetchPage(0, seachStudent1);
       _pagingController.refresh();
-      setState(() {});
     } catch (error) {
       _pagingController.error = error;
     }
-    print('searchString $seachStudent1');
   }
 }

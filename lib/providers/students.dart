@@ -1,24 +1,27 @@
 import 'dart:convert';
 
-import 'package:education/model/grade.dart';
+import 'dart:io' as io;
+import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:http/http.dart' as http;
-
-import 'package:education/providers/student.dart';
+import 'package:education/model/student.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path1;
 
 import 'dart:convert' as convert;
 
-import '../main.dart';
+import 'dart:typed_data';
+
+import 'package:http_parser/http_parser.dart';
+
+import 'package:async/async.dart';
+import 'package:path/path.dart';
 
 class Students with ChangeNotifier {
   late Student currentStudent;
-  static const basicUrl = '10.0.2.2:8080';
-  // static const basicUrl = 'localhost:8080';
 
   List<Student> _listStudent = [];
-  List<Grade> _listGrade = [];
 
   List<Student> get listStudent => _listStudent;
 
@@ -27,21 +30,19 @@ class Students with ChangeNotifier {
   }
   Future<List<Student>> serachStudent(String stringSearch) async {
     // _listStudent = [];
-    var url = Uri.http(basicUrl, '/students/allstudents/');
-    List<Student>? res;
+    var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
+
     try {
       print('length is');
       var responRes = await http.get(url);
 
       if (responRes.statusCode == 200) {
-        const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
         print('length is  $itemCount');
 
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
         print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
@@ -50,8 +51,8 @@ class Students with ChangeNotifier {
               email: element['firstName'],
               firstName: element['firstName'],
               brithDate: element['brithDate']));
-          print(element['id']);
-          print(element['firstName']);
+          // print(element['id']);
+          // print(element['firstName']);
         });
       } else {
         print('there is Error  in request with state${responRes.statusCode}');
@@ -68,23 +69,17 @@ class Students with ChangeNotifier {
 
   Future<List<Student>> fetchStudents() async {
     _listStudent = [];
-    var url = Uri.http(basicUrl, '/students/allstudents/');
+    var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
 
-    List<Student>? res;
     try {
-      print('length is');
       var responRes = await http.get(url);
 
       if (responRes.statusCode == 200) {
-        const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
-        print('length is  $itemCount');
 
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
-        print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
               id: element['id'],
@@ -92,28 +87,28 @@ class Students with ChangeNotifier {
               email: element['firstName'],
               firstName: element['firstName'],
               brithDate: element['brithDate']));
-          print(element['id']);
-          print(element['firstName']);
         });
       } else {
         print('there is Error  in request with state${responRes.statusCode}');
       }
     } catch (error) {
       print(error.toString());
-      // throw (error);
     }
-
     return _listStudent;
   }
 
   Future<List<Student>> getStudentListByPage(
       int pagkey, int num, String? searchString) async {
-    var url = Uri.http(basicUrl,
-        '/students/studentspage/ ${pagkey.toString()}/ ${num.toString()}/${searchString}');
-    print(url.toString());
+    Map<String, String> queryParameters = {
+      "searchString": searchString == null ? "" : searchString
+    };
+
+    var url = Uri.http(
+        Setting.basicUrl,
+        '/students/studentspage/ ${pagkey.toString()}/ ${num.toString()}',
+        queryParameters);
     _listStudent = [];
 
-    List<Student>? res;
     try {
       var responRes = await http.get(url);
 
@@ -123,10 +118,6 @@ class Students with ChangeNotifier {
             .jsonDecode(utf8.decode(responRes.bodyBytes)) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
-        print('length is  $itemCount');
-
-        // var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
-        //  print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           String date = element['brithDate'] ?? ' ';
           var finaldate;
@@ -157,56 +148,10 @@ class Students with ChangeNotifier {
     return _listStudent;
   }
 
-  Future<List<Grade>> getGradeListByPage(int pageKey, int pageSize) async {
-    var url = Uri.http(basicUrl, '/grades/gradespage/$pageKey/$pageSize');
-    print('length Grade Grade Grade Grade Grade Grade ');
-    print(url.toString());
-    _listGrade = [];
+  addStudent(Student editeStudent, io.File image, Image imageupload,
+      XFile? pickedImage) async {
+    final url = Uri.http(Setting.basicUrl, '/students/new/');
 
-    List<Grade>? res;
-    try {
-      print('length is');
-      var responRes = await http.get(url);
-
-      if (responRes.statusCode == 200) {
-        const Utf8Codec utf8 = Utf8Codec();
-        final jsonResponRes = convert
-            .jsonDecode(utf8.decode(responRes.bodyBytes)) as List<dynamic>;
-
-        var itemCount = jsonResponRes.length;
-        print('length is  $itemCount');
-
-        var listquestion = jsonResponRes.map<dynamic>((e) => e).toList();
-        print('length is listquestion   ${listquestion.length}');
-        print('list length ${jsonResponRes[1].toString()}');
-        int i = 0;
-        listquestion.forEach((element) {
-          i = i + 1;
-          print('iiiiiiiiiiiiii   ${i}');
-          _listGrade.add(Grade(
-            id: element['id'],
-            nameAr: element['nameAr'],
-            nameEn: 'hhhh',
-            nameTr: 'hhhh',
-          ));
-          // print(element['id'].toString());
-          // print(element['nameEn']);
-        });
-      } else {
-        print('there is Error  in request with state${responRes.statusCode}');
-      }
-    } catch (error) {
-      print(error.toString());
-      // throw (error);
-    }
-    notifyListeners();
-    return _listGrade;
-  }
-
-  addStudent(Student editeStudent) async {
-    print('addStudent');
-    final url = Uri.http(basicUrl, '/students/new/');
-    String? formattedDate;
     String? date;
 
     if (editeStudent.brithDate == null) {
@@ -218,6 +163,8 @@ class Students with ChangeNotifier {
     print(date.toString());
     try {
       print(' before addStudent');
+      //  print(editeStudent.);
+
       final response = await http.post(
         url,
         headers: {
@@ -230,14 +177,50 @@ class Students with ChangeNotifier {
           'lastName': editeStudent.lastName,
           'email': editeStudent.email,
           "birthDate": date,
+          "grade": editeStudent.grade,
+          //  "grade": 4,
+          "imageuri": editeStudent.imageuri,
         }),
       );
-      print(response.body);
+      print(editeStudent.toString());
+
+      if (response.statusCode == 200) {
+        final parsed = jsonDecode(response.body);
+        print(parsed);
+        try {
+          image != null
+              ? await uploadImage(
+                  image, parsed['id'].toString(), imageupload, pickedImage)
+              : null;
+        } on Exception catch (error) {
+          print(" Image can not sore o server $error.toString() ");
+        }
+      } else
+        throw Exception('Ithere is problem  in  request or response ');
 
       notifyListeners();
     } catch (error) {
       print(error);
       throw error;
+    }
+  }
+
+  Future uploadImage(io.File image, String parse, Image imageupload,
+      XFile? pickedImage) async {
+    final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
+    var request = http.MultipartRequest('POST', url);
+
+    print(image.path.toString());
+    var takenPicture =
+        await http.MultipartFile.fromPath("file", image.path.toString());
+    request.files.add(takenPicture);
+    print('afrer  takenPicture   belote ');
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Image  Student is uploadedImage  Student is uploaded!');
+    } else {
+      print('Image Student  not uploaded');
     }
   }
 }

@@ -1,15 +1,21 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:education/model/setting.dart';
+import 'package:education/providers/grades.dart';
 import 'package:intl/intl.dart';
 import 'package:education/model/app_drawer.dart';
-import 'package:education/providers/student.dart';
+import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../model/grade.dart';
+import 'list_student.dart';
+
+import 'dart:io' as io;
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -21,51 +27,81 @@ class StudenForm extends StatefulWidget {
 }
 
 class _StudenFormState extends State<StudenForm> {
-  Student? _editeStudent;
-  File? _imageFile;
+  Student? _editeStudent = new Student(
+      firstName: "dd",
+      lastName: 'dfdfhd',
+      email: 'ghjgf',
+      brithDate: DateTime.now());
+  io.File _file = io.File("zz");
+
+  Uint8List webImagereadAsBytes = Uint8List(10);
+  io.File? _imageFile;
+  late Image image;
+  late Image imageweb;
+  XFile? pickedImage;
   TextEditingController dateinput = TextEditingController();
+
+  List<Grade> itemsGrade = [];
+
+  var DropdownButtonGrade = null;
+  //Future<List<String>> items = await getGateList();
   // ignore: unused_element
-  Future<void> uploadImage(String inputSource) async {
+
+  Future<void> getGradeList() async {
+    itemsGrade = await Provider.of<Grades>(context, listen: false)
+        .getGradeListByPage(0, 50);
+    // items = newItems.map((e) => e.nameAr).toList();
+  }
+
+  @override
+  void initState() {
+    // getGateList();
+    getGradeList();
+
+    super.initState();
+  }
+
+  Future<void> takeImage(String inputSource) async {
+    print('takeImage takeImage takeImage takeImage');
+
     final picker = ImagePicker();
-    PickedFile pickedImage;
+
     try {
-      XFile? pickedImage = await picker.pickImage(
+      pickedImage = await picker.pickImage(
           source: inputSource == 'camera'
               ? ImageSource.camera
               : ImageSource.gallery);
 
-      final String fileName = path.basename(pickedImage!.path);
-      // _imageFile = File(pickedImage.path);
+      webImagereadAsBytes = (await pickedImage?.readAsBytes())!;
+
+      if (kIsWeb) {
+        imageweb = Image.network(pickedImage!.path);
+      } else {
+        image = Image.file(io.File(pickedImage!.path));
+      }
+      _imageFile = io.File(pickedImage!.path);
+      path.basename(pickedImage!.path);
 
       setState(() {
-        _imageFile = File(pickedImage.path);
-        print(_imageFile);
+        if (kIsWeb) {
+          webImagereadAsBytes = webImagereadAsBytes;
+          _imageFile = io.File(pickedImage!.path);
+        } else {
+          _imageFile = io.File(pickedImage!.path);
+        }
+        print(pickedImage!.path);
+        _editeStudent?.imageuri = path.basename(pickedImage!.path);
+        print(
+            'ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg');
+        print(_editeStudent?.imageuri);
+        //print(path.basename(pickedImage.path));
       });
-
-      /*
-      final String url = await Provider.of<Products>(context, listen: false)
-          .storeIamge(imageFile);
-
-      _imageUrlController.text = url;
-
-      setState(() {});
-
-      // Refresh the UI
-    */
-
     } on Exception catch (error) {
-      print(error);
+      print(" you do do not take image correctly  $error.toString() ");
     }
   }
 
-  //**************************************** */
-
   Future<void> _saveForm() async {
-    _editeStudent = new Student(
-        firstName: "dd",
-        lastName: 'dfdfhd',
-        email: 'ghjgf',
-        brithDate: DateTime.now());
     final isValid = _formKey.currentState?.validate();
     if (!isValid!) {
       return;
@@ -73,9 +109,44 @@ class _StudenFormState extends State<StudenForm> {
 
     _formKey.currentState?.save();
     if (_editeStudent != null) {
-      await Provider.of<Students>(context, listen: false)
-          .addStudent(_editeStudent!);
-    } else {}
+      _editeStudent?.imageuri =
+          Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
+      print('begin  uploads ');
+      if (kIsWeb) {
+        print('addStudentweb   uploads ');
+        // await Provider.of<Students>(context, listen: false).addStudentweb(
+        //     _editeStudent!, webImagereadAsBytes, imageweb, pickedImage);
+      } else {
+        await Provider.of<Students>(context, listen: false)
+            .addStudent(_editeStudent!, _imageFile!, image, pickedImage);
+      }
+    } else {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.BOTTOMSLIDE,
+        title: 'ERROR',
+        desc: 'Student has not  inserted.',
+        btnOkOnPress: () {
+          //Navigator.pop(context);
+
+          // Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+        },
+      ).show();
+    }
+
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.INFO,
+      animType: AnimType.BOTTOMSLIDE,
+      title: 'Success',
+      desc: 'New Student has inserted.',
+      btnOkOnPress: () {
+        //Navigator.pop(context);
+
+        //Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+      },
+    ).show();
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -100,40 +171,28 @@ class _StudenFormState extends State<StudenForm> {
             child: ListView(
               children: <Widget>[
                 TextFormField(
+                  readOnly: true,
                   decoration:
                       InputDecoration(label: Center(child: Text(' ID '))),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter DI ';
-                    }
-                    print('onField validator   ID  ');
-                    return null;
-                  },
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
-                    if (value != null || value!.isNotEmpty) {
-                      /*_editeStudent = Student(
-                          firstName: value,
-                          lastName: _editeStudent!.lastName,
-                          email: _editeStudent!.email.toString(),
-                          brithDate: _editeStudent!.brithDate);*/
-                    }
+                    if (value != null || value!.isNotEmpty) {}
 
-                    print('onField onSaved  ID  ');
+                    //  print('onField onSaved  ID  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted ID');
+                    //  print('onFieldSubmitted ID');
                   },
                   keyboardType: TextInputType.number,
                 ),
-
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('First Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter First Name ';
                     }
-                    print('onField validator   First Name  ');
+                    // print('onField validator   First Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -143,17 +202,19 @@ class _StudenFormState extends State<StudenForm> {
                           firstName: value,
                           lastName: _editeStudent!.lastName,
                           email: _editeStudent!.email.toString(),
+                          grade: _editeStudent!.grade,
                           brithDate: _editeStudent!.brithDate);
                     }
 
-                    print('onField onSaved  First Name  ');
+                    //('onField onSaved  First Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted First Name');
+                    //  print('onFieldSubmitted First Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'Matar',
                   decoration: InputDecoration(label: Text('Last Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -168,6 +229,7 @@ class _StudenFormState extends State<StudenForm> {
                       _editeStudent = Student(
                           firstName: value,
                           lastName: _editeStudent!.lastName,
+                          grade: _editeStudent!.grade,
                           email: _editeStudent!.email.toString(),
                           brithDate: _editeStudent!.brithDate);
                     }
@@ -175,17 +237,18 @@ class _StudenFormState extends State<StudenForm> {
                     print('onField onSaved  Last Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted Last Name');
+                    // print('onFieldSubmitted Last Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('fathr Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter fathr Name ';
                     }
-                    print('onField validator   fathr Name  ');
+                    //  print('onField validator   fathr Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -201,17 +264,18 @@ class _StudenFormState extends State<StudenForm> {
                     print('onField onSaved  fathr Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted fathr Name');
+                    // print('onFieldSubmitted fathr Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN',
                   decoration: InputDecoration(label: Text('Mother Name ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter Mother Name ';
                     }
-                    print('onField validator   Mother Name  ');
+                    // print('onField validator   Mother Name  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -224,21 +288,21 @@ class _StudenFormState extends State<StudenForm> {
                           brithDate: _editeStudent!.brithDate);*/
                     }
 
-                    print('onField onSaved  Mother Name  ');
+                    // print('onField onSaved  Mother Name  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted Mother Name');
+                    //  print('onFieldSubmitted Mother Name');
                   },
                   keyboardType: TextInputType.text,
                 ),
-
                 TextFormField(
+                  initialValue: '8545251451',
                   decoration: InputDecoration(label: Text(' TC ')),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter TC ';
                     }
-                    print('onField validator   TC  ');
+                    //  print('onField validator   TC  ');
                     return null;
                   },
                   textInputAction: TextInputAction.next,
@@ -251,14 +315,15 @@ class _StudenFormState extends State<StudenForm> {
                           brithDate: _editeStudent!.brithDate);*/
                     }
 
-                    print('onField onSaved  TC  ');
+                    //print('onField onSaved  TC  ');
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted TC');
+                    // print('onFieldSubmitted TC');
                   },
                   keyboardType: TextInputType.number,
                 ),
                 TextFormField(
+                  // initialValue: '22-05-2022',
                   controller: dateinput,
                   // decoration: InputDecoration(label: Text('Brith Date ')),
                   textInputAction: TextInputAction.next,
@@ -284,8 +349,8 @@ class _StudenFormState extends State<StudenForm> {
                           pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                       String formattedDate =
                           DateFormat('yyyy-MM-dd').format(pickedDate);
-                      print(
-                          formattedDate); //formatted date output using intl package =>  2021-03-16
+                      //  print(
+                      //     formattedDate); //formatted date output using intl package =>  2021-03-16
                       //you can implement different kind of Date Format here according to your requirement
 
                       setState(() {
@@ -293,7 +358,7 @@ class _StudenFormState extends State<StudenForm> {
                             formattedDate; //set output date to TextField value.
                       });
                     } else {
-                      print("Date is not selected");
+                      //  print("Date is not selected");
                     }
                   },
                   validator: (value) {
@@ -311,17 +376,18 @@ class _StudenFormState extends State<StudenForm> {
                         firstName: _editeStudent!.firstName,
                         lastName: _editeStudent!.lastName,
                         email: _editeStudent!.email,
+                        grade: _editeStudent!.grade,
                       );
                     }
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted');
-
-                    print('updatedDt ' + value);
+                    //    print('onFieldSubmitted');
+                    //  print('updatedDt ' + value);
                   },
                   keyboardType: TextInputType.datetime,
                 ),
                 TextFormField(
+                  initialValue: 'HADUN@dgd.com',
                   decoration: InputDecoration(label: Text('Email ')),
                   textInputAction: TextInputAction.next,
                   onSaved: (value) {
@@ -329,54 +395,61 @@ class _StudenFormState extends State<StudenForm> {
                       _editeStudent = Student(
                           firstName: _editeStudent!.firstName,
                           lastName: _editeStudent!.lastName,
+                          grade: _editeStudent!.grade,
                           email: value,
                           brithDate: _editeStudent!.brithDate);
                     }
                   },
                   onFieldSubmitted: (value) {
-                    print('onFieldSubmitted');
+                    //  print('onFieldSubmitted');
                   },
                   keyboardType: TextInputType.emailAddress,
                   validator: (val) => val == null || val.isEmpty || isEmail(val)
                       ? null
                       : "Invalid Email",
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Center(
-                        child: Container(
-                      height: 100,
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                          gradient: LinearGradient(
-                              colors: [Colors.green, Colors.orange],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight)),
-                      child: ClipRRect(
+                      child: Container(
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100)),
+                            gradient: LinearGradient(
+                                colors: [Colors.green, Colors.orange],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight)),
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           clipBehavior: Clip.hardEdge,
                           child: _imageFile != null
                               ? kIsWeb
-                                  ? Image.network(
-                                      _imageFile!.path,
+                                  ? Image.memory(
+                                      webImagereadAsBytes,
                                       fit: BoxFit.fill,
-                                      // width: 75,
-                                      // height: 75,
-                                    )
+                                    ) //
                                   : Image.file(
                                       _imageFile!,
                                       fit: BoxFit.fill,
                                       // width: 75,
                                       // height: 75,
                                     )
-                              : null),
-                    )),
+                              : Image.network(
+                                  'http://${Setting.basicUrl}/downloadFile/person.png',
+                                  fit: BoxFit.fill,
+                                ),
+                        ),
+                      ),
+                    ),
                     IconButton(
                         onPressed: () async {
-                          uploadImage('camera');
+                          takeImage(Theme.of(context).platform ==
+                                  TargetPlatform.android
+                              ? 'camera'
+                              : 'gallery');
                         },
                         icon: Icon(
                           Icons.camera_alt,
@@ -384,7 +457,37 @@ class _StudenFormState extends State<StudenForm> {
                         )),
                   ],
                 ),
-                //  Image(image: FileImage(File(path))),
+                DropdownButton<Grade>(
+                    value: DropdownButtonGrade,
+                    icon: const Icon(Icons.arrow_downward, color: Colors.red),
+                    elevation: 16,
+                    // style: const TextStyle(color: Color.fromARGB(255, 5, 1, 0)),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.green,
+                    ),
+                    items:
+                        itemsGrade.map<DropdownMenuItem<Grade>>((Grade value) {
+                      //  print('itemsGrade is  =  $itemsGrade.length');
+                      return DropdownMenuItem<Grade>(
+                        value: value,
+                        child: Text(value.nameAr),
+                      );
+                    }).toList(),
+                    itemHeight: 50,
+                    onChanged: (value) {
+                      // print('grad id  =  $value');
+                      setState(() {
+                        DropdownButtonGrade = value;
+                        //    print('grad id  =  {$value.id}');
+                        _editeStudent = Student(
+                            firstName: _editeStudent!.firstName,
+                            lastName: _editeStudent!.lastName,
+                            email: _editeStudent!.email,
+                            brithDate: _editeStudent!.brithDate,
+                            grade: value?.id);
+                      });
+                    })
               ],
             ),
           ),
@@ -456,5 +559,3 @@ String? validateEmail(String? value) {
     else
       return null;
   }*/
-
-

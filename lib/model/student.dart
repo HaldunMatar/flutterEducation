@@ -6,6 +6,9 @@ class Student with ChangeNotifier {
   String lastName;
   String email;
   DateTime? brithDate;
+  int? grade;
+
+  String? imageuri;
 
   Student({
     this.id,
@@ -13,5 +16,6 @@ class Student with ChangeNotifier {
     required this.lastName,
     required this.email,
     required this.brithDate,
+    this.grade,
   });
 }
