@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:education/model/setting.dart';
@@ -9,14 +8,14 @@ import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
-
 import '../model/grade.dart';
 import 'list_student.dart';
+
+import 'dart:io' as io;
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -33,11 +32,13 @@ class _StudenFormState extends State<StudenForm> {
       lastName: 'dfdfhd',
       email: 'ghjgf',
       brithDate: DateTime.now());
-  File _file = File("zz");
+  io.File _file = io.File("zz");
 
-  Uint8List webImage = Uint8List(10);
-  File? _imageFile;
+  Uint8List webImagereadAsBytes = Uint8List(10);
+  io.File? _imageFile;
   late Image image;
+  late Image imageweb;
+  XFile? pickedImage;
   TextEditingController dateinput = TextEditingController();
 
   List<Grade> itemsGrade = [];
@@ -66,33 +67,30 @@ class _StudenFormState extends State<StudenForm> {
     final picker = ImagePicker();
 
     try {
-      XFile? pickedImage = await picker.pickImage(
+      pickedImage = await picker.pickImage(
           source: inputSource == 'camera'
               ? ImageSource.camera
               : ImageSource.gallery);
 
-      var f = await pickedImage?.readAsBytes();
+      webImagereadAsBytes = (await pickedImage?.readAsBytes())!;
 
       if (kIsWeb) {
-        image = Image.network(pickedImage!.path);
+        imageweb = Image.network(pickedImage!.path);
       } else {
-        image = Image.file(File(pickedImage!.path));
+        image = Image.file(io.File(pickedImage!.path));
       }
-
-//************************** */
-
-//***********************
-// */
-
+      _imageFile = io.File(pickedImage!.path);
       path.basename(pickedImage!.path);
-      // _imageFile = File(pickedImage.path);
 
       setState(() {
-        webImage = f!;
-
-        _imageFile = File(pickedImage.path);
-        print(pickedImage.path);
-        _editeStudent?.imageuri = path.basename(pickedImage.path);
+        if (kIsWeb) {
+          webImagereadAsBytes = webImagereadAsBytes;
+          _imageFile = io.File(pickedImage!.path);
+        } else {
+          _imageFile = io.File(pickedImage!.path);
+        }
+        print(pickedImage!.path);
+        _editeStudent?.imageuri = path.basename(pickedImage!.path);
         print(
             'ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg');
         print(_editeStudent?.imageuri);
@@ -113,9 +111,15 @@ class _StudenFormState extends State<StudenForm> {
     if (_editeStudent != null) {
       _editeStudent?.imageuri =
           Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
-
-      await Provider.of<Students>(context, listen: false)
-          .addStudent(_editeStudent!, _imageFile!, image);
+      print('begin  uploads ');
+      if (kIsWeb) {
+        print('addStudentweb   uploads ');
+        // await Provider.of<Students>(context, listen: false).addStudentweb(
+        //     _editeStudent!, webImagereadAsBytes, imageweb, pickedImage);
+      } else {
+        await Provider.of<Students>(context, listen: false)
+            .addStudent(_editeStudent!, _imageFile!, image, pickedImage);
+      }
     } else {
       AwesomeDialog(
         context: context,
@@ -140,7 +144,7 @@ class _StudenFormState extends State<StudenForm> {
       btnOkOnPress: () {
         //Navigator.pop(context);
 
-        Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+        //Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
       },
     ).show();
   }
@@ -424,7 +428,7 @@ class _StudenFormState extends State<StudenForm> {
                           child: _imageFile != null
                               ? kIsWeb
                                   ? Image.memory(
-                                      webImage,
+                                      webImagereadAsBytes,
                                       fit: BoxFit.fill,
                                     ) //
                                   : Image.file(
