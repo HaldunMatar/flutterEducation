@@ -2,6 +2,7 @@ import 'package:education/model/app_drawer.dart';
 import 'package:education/model/setting.dart';
 import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
+import 'package:education/screens/student_form.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
@@ -98,9 +99,31 @@ class _StudentListViewState extends State<StudentListView> {
                 ),
                 title: Text(item.firstName),
                 subtitle: Text(item.id.toString()),
-                trailing: Icon(
-                  Icons.person_remove,
-                  color: Colors.red,
+                trailing: Container(
+                  child: Container(
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(
+                                StudenForm.routeName,
+                                arguments: item.id.toString());
+                          },
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            //   Provider.of<Products>(context, listen: false).deleteProduct(id);
+                          },
+                          color: Theme.of(context).errorColor,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

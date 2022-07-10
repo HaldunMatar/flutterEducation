@@ -19,15 +19,16 @@ import 'package:async/async.dart';
 import 'package:path/path.dart';
 
 class Students with ChangeNotifier {
-  late Student currentStudent;
-
+  Student? get currentStudent1 => currentStudent;
+  Student? currentStudent;
   List<Student> _listStudent = [];
-
   List<Student> get listStudent => _listStudent;
+  // Student? _editeStudent = null;
 
   Students() {
     // fetchStudents();
   }
+
   Future<List<Student>> serachStudent(String stringSearch) async {
     // _listStudent = [];
     var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
@@ -205,7 +206,7 @@ class Students with ChangeNotifier {
     }
   }
 
-  Future uploadImage(io.File image, String parse, Image imageupload,
+  Future uploadImage(io.File image, String parseid, Image imageupload,
       XFile? pickedImage) async {
     final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
     var request = http.MultipartRequest('POST', url);
@@ -213,6 +214,7 @@ class Students with ChangeNotifier {
     print(image.path.toString());
     var takenPicture =
         await http.MultipartFile.fromPath("file", image.path.toString());
+    request.fields.addAll({'fileid': parseid});
     request.files.add(takenPicture);
     print('afrer  takenPicture   belote ');
 
@@ -222,5 +224,39 @@ class Students with ChangeNotifier {
     } else {
       print('Image Student  not uploaded');
     }
+  }
+
+  Future findById(String studentId) async {
+    var url = Uri.http(Setting.basicUrl, '/students/get/$studentId');
+    // print('length Grade Grade Grade Grade Grade Grade ');
+    print(' findById  ${url.toString()}');
+    try {
+      var responRes = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept"
+        },
+      );
+
+      if (responRes.statusCode == 200) {
+        const Utf8Codec utf8 = Utf8Codec();
+        final jsonResponRes =
+            convert.jsonDecode(utf8.decode(responRes.bodyBytes));
+        print("findById11$jsonResponRes");
+        currentStudent = Student(
+            id: jsonResponRes['id'],
+            firstName: jsonResponRes['firstName'],
+            lastName: jsonResponRes['lastName'],
+            email: jsonResponRes['email'],
+            brithDate: DateTime.parse(jsonResponRes['birthDate']));
+      }
+    } catch (error) {
+      print(error.toString());
+      // throw (error);
+    }
+    notifyListeners();
+    // return currentStudent;
   }
 }
