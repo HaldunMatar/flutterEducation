@@ -34,7 +34,7 @@ class Students with ChangeNotifier {
     var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
 
     try {
-      print('length is');
+      // print('length is');
       var responRes = await http.get(url);
 
       if (responRes.statusCode == 200) {
@@ -42,9 +42,9 @@ class Students with ChangeNotifier {
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
-        print('length is  $itemCount');
+        // print('length is  $itemCount');
 
-        print('list length ${jsonResponRes[5].toString()}');
+        // print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
           _listStudent.add(Student(
               id: element['id'],
@@ -135,8 +135,8 @@ class Students with ChangeNotifier {
               firstName: element['firstName'],
               brithDate: finaldate));
 
-          print(element['id'].toString() +
-              ' firstName =  ${element['firstName']} ');
+          // print(element['id'].toString() +
+          //    ' firstName =  ${element['firstName']} ');
         });
       } else {
         print('there is Error  in request with state${responRes.statusCode}');
@@ -163,7 +163,7 @@ class Students with ChangeNotifier {
 
     print(date.toString());
     try {
-      print(' before addStudent');
+      //  print(' before addStudent');
       //  print(editeStudent.);
 
       final response = await http.post(
@@ -183,7 +183,7 @@ class Students with ChangeNotifier {
           "imageuri": editeStudent.imageuri,
         }),
       );
-      print(editeStudent.toString());
+      // print(editeStudent.toString());
 
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
@@ -194,7 +194,7 @@ class Students with ChangeNotifier {
                   image, parsed['id'].toString(), imageupload, pickedImage)
               : null;
         } on Exception catch (error) {
-          print(" Image can not sore o server $error.toString() ");
+          print(" Image can not store o server $error.toString() ");
         }
       } else
         throw Exception('Ithere is problem  in  request or response ');
@@ -244,13 +244,20 @@ class Students with ChangeNotifier {
         const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(utf8.decode(responRes.bodyBytes));
-        print("findById11$jsonResponRes");
+
+        // print("findById11$jsonResponRes['birthDate']");
+        print('gggggggggggggggggggggggggggggggggggggggggggggggggg');
+
+        print(jsonResponRes['birthDate']);
         currentStudent = Student(
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
             lastName: jsonResponRes['lastName'],
             email: jsonResponRes['email'],
-            brithDate: DateTime.parse(jsonResponRes['birthDate']));
+            brithDate: DateTime.parse(jsonResponRes['birthDate'])
+                .add(Duration(days: 1)));
+      } else {
+        print(responRes.body);
       }
     } catch (error) {
       print(error.toString());

@@ -27,8 +27,7 @@ class StudenForm extends StatefulWidget {
 }
 
 class _StudenFormState extends State<StudenForm> {
-  Student? editeStudent = new Student(
-      firstName: "", id: -1, lastName: '', email: '', brithDate: null);
+  Student? editeStudent;
   io.File _file = io.File("zz");
 
   Uint8List webImagereadAsBytes = Uint8List(10);
@@ -42,6 +41,17 @@ class _StudenFormState extends State<StudenForm> {
 
   var DropdownButtonGrade = null;
   var _isLoading = false;
+
+  var _initValues = {
+    'id': '',
+    'firstName': '',
+    'lastName': '',
+    'email': '',
+    'birthDate': '',
+    'grade': '',
+    'imageuri': '',
+    'birrthDate': ''
+  };
   //Future<List<String>> items = await getGateList();
   // ignore: unused_element
 
@@ -164,6 +174,21 @@ class _StudenFormState extends State<StudenForm> {
           ? ''
           : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
 
+      _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
+
+      _initValues['firstName'] = editeStudent?.firstName ?? '';
+      _initValues['lastName'] = editeStudent?.lastName ?? '';
+      ;
+      _initValues['email'] = editeStudent?.email ?? '';
+      ;
+      _initValues['birthDate'] = editeStudent?.brithDate == null
+          ? ''
+          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+      _initValues['grade'] = editeStudent?.grade.toString() ?? '';
+      _initValues['birthDate'] = editeStudent?.brithDate == null
+          ? ''
+          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+
       // println('curent ${editeStudent!.brithDate.toString()}');
     }
 
@@ -179,7 +204,7 @@ class _StudenFormState extends State<StudenForm> {
 
   @override
   Widget build(BuildContext context) {
-    editeStudent = Provider.of<Students>(context, listen: false).currentStudent;
+    // editeStudent = Provider.of<Students>(context, listen: false).currentStudent;
     //dateinput.text = '12/12/2012';
     return Scaffold(
         appBar: AppBar(
@@ -205,6 +230,7 @@ class _StudenFormState extends State<StudenForm> {
                     children: <Widget>[
                       TextFormField(
                         readOnly: true,
+                        initialValue: _initValues['id'],
                         decoration:
                             InputDecoration(label: Center(child: Text(' ID '))),
                         textInputAction: TextInputAction.next,
@@ -219,7 +245,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.number,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.firstName,
+                        initialValue: _initValues['firstName'],
                         decoration: InputDecoration(label: Text('First Name ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -247,7 +273,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.lastName,
+                        initialValue: _initValues['lastName'],
                         decoration: InputDecoration(label: Text('Last Name ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -275,7 +301,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.lastName,
+                        initialValue: _initValues['lastName'],
                         decoration: InputDecoration(label: Text('fathr Name ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -302,7 +328,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.lastName,
+                        initialValue: _initValues['lastName'],
                         decoration:
                             InputDecoration(label: Text('Mother Name ')),
                         validator: (value) {
@@ -324,7 +350,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.id.toString(),
+                        initialValue: _initValues['id'],
                         decoration: InputDecoration(label: Text(' TC ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -406,7 +432,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.datetime,
                       ),
                       TextFormField(
-                        initialValue: editeStudent?.email,
+                        initialValue: _initValues['email'],
                         decoration: InputDecoration(label: Text('Email ')),
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
