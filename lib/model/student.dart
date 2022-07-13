@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 
 class Student with ChangeNotifier {
   int? id;
-  String firstName;
-  String lastName;
-  String email;
+  String firstName = '';
+  String lastName = '';
+  String email = '';
   DateTime? brithDate;
   int? grade;
 
@@ -18,4 +18,6 @@ class Student with ChangeNotifier {
     required this.brithDate,
     this.grade,
   });
+
+  Student.init();
 }

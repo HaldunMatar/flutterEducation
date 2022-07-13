@@ -109,6 +109,7 @@ class _StudenFormState extends State<StudenForm> {
 
   Future<void> _saveForm() async {
     final isValid = _formKey.currentState?.validate();
+
     if (!isValid!) {
       return;
     }
@@ -190,6 +191,10 @@ class _StudenFormState extends State<StudenForm> {
           : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
 
       // println('curent ${editeStudent!.brithDate.toString()}');
+    } else {
+      if (editeStudent == null) {
+        editeStudent = Student.init();
+      }
     }
 
     super.didChangeDependencies();
@@ -523,7 +528,7 @@ class _StudenFormState extends State<StudenForm> {
                           }).toList(),
                           itemHeight: 50,
                           onChanged: (value) {
-                            // print('grad id  =  $value');
+                            print('grad id  =  $value');
                             setState(() {
                               DropdownButtonGrade = value;
                               //    print('grad id  =  {$value.id}');
