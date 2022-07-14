@@ -10,14 +10,16 @@ import 'dart:convert' as convert;
 import '../model/grade.dart';
 
 class Grades with ChangeNotifier {
-  List<Grade> _listGrade = [];
+  List<Grade> listGrade = [];
+
+  // List<Grade> itemsGrade = [];
 
   Future<List<Grade>> getGradeListByPage(int pageKey, int pageSize) async {
     var url =
         Uri.http(Setting.basicUrl, '/grades/gradespage/$pageKey/$pageSize');
     // print('length Grade Grade Grade Grade Grade Grade ');
     print(url.toString());
-    _listGrade = [];
+    // _listGrade = [];
 
     try {
       var responRes = await http.get(
@@ -44,7 +46,7 @@ class Grades with ChangeNotifier {
         listquestion.forEach((element) {
           i = i + 1;
           //  print('iiiiiiiiiiiiii   ${i}');
-          _listGrade.add(Grade(
+          listGrade.add(Grade(
             id: element['id'],
             nameAr: element['nameAr'],
             nameEn: element['nameEn'],
@@ -61,6 +63,6 @@ class Grades with ChangeNotifier {
       // throw (error);
     }
     notifyListeners();
-    return _listGrade;
+    return listGrade;
   }
 }

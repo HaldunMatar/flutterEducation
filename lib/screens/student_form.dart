@@ -52,27 +52,19 @@ class _StudenFormState extends State<StudenForm> {
     'imageuri': '',
     'birrthDate': ''
   };
-  //Future<List<String>> items = await getGateList();
-  // ignore: unused_element
-
   Future<void> getGradeList() async {
-    itemsGrade = await Provider.of<Grades>(context, listen: false)
-        .getGradeListByPage(0, 50);
-    // items = newItems.map((e) => e.nameAr).toList();
+    await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
+
+    itemsGrade = Provider.of<Grades>(context, listen: false).listGrade;
+    print('getGradeListByPage');
   }
 
   @override
   void initState() {
-    //dateinput.value=';
     super.initState();
-    // dateinput.addListener(() {});
-    getGradeList();
-    // super.initState();
   }
 
   Future<void> takeImage(String inputSource) async {
-    print('takeImage takeImage takeImage takeImage');
-
     final picker = ImagePicker();
 
     try {
@@ -98,9 +90,9 @@ class _StudenFormState extends State<StudenForm> {
         } else {
           _imageFile = io.File(pickedImage!.path);
         }
-        print(pickedImage!.path);
+        //  print(pickedImage!.path);
         editeStudent?.imageuri = path.basename(pickedImage!.path);
-        print(editeStudent?.imageuri);
+        // print(editeStudent?.imageuri);
       });
     } on Exception catch (error) {
       print(" you do do not take image correctly  $error.toString() ");
@@ -159,12 +151,18 @@ class _StudenFormState extends State<StudenForm> {
   bool _init = true;
   Future<void> didChangeDependencies() async {
     final studentId = ModalRoute.of(context)?.settings.arguments;
+
+    /* setState(() {
+      _isLoading = false;
+    });*/
     // ignore: unnecessary_null_comparison
     //  if (_init) {
     if (studentId != null) {
       _isLoading = true;
       await Provider.of<Students>(context, listen: false)
           .findById(studentId as String);
+      await getGradeList();
+
       setState(() {
         _isLoading = false;
       });
@@ -190,10 +188,16 @@ class _StudenFormState extends State<StudenForm> {
           ? ''
           : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
 
-      // println('curent ${editeStudent!.brithDate.toString()}');
+      println('curent ${editeStudent!.brithDate.toString()}');
     } else {
       if (editeStudent == null) {
         editeStudent = Student.init();
+
+        await getGradeList();
+
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
 
@@ -209,8 +213,6 @@ class _StudenFormState extends State<StudenForm> {
 
   @override
   Widget build(BuildContext context) {
-    // editeStudent = Provider.of<Students>(context, listen: false).currentStudent;
-    //dateinput.text = '12/12/2012';
     return Scaffold(
         appBar: AppBar(
           title: Text('student Form'),
