@@ -39,7 +39,7 @@ class _StudenFormState extends State<StudenForm> {
 
   List<Grade> itemsGrade = [];
 
-  var DropdownButtonGrade = null;
+  Grade? DropdownButtonGrade;
   var _isLoading = false;
 
   var _initValues = {
@@ -150,57 +150,77 @@ class _StudenFormState extends State<StudenForm> {
 
   bool _init = true;
   Future<void> didChangeDependencies() async {
-    final studentId = ModalRoute.of(context)?.settings.arguments;
-
-    /* setState(() {
+    // final studentId = ModalRoute.of(context)?.settings.arguments as String?;
+    final studentId = '993';
+    println(' didChangeDependencies studentId  $studentId ');
+    setState(() {
       _isLoading = false;
-    });*/
+    });
     // ignore: unnecessary_null_comparison
-    //  if (_init) {
-    if (studentId != null) {
-      _isLoading = true;
-      await Provider.of<Students>(context, listen: false)
-          .findById(studentId as String);
-      await getGradeList();
-
-      setState(() {
-        _isLoading = false;
-      });
-      _init = false;
-      editeStudent =
-          Provider.of<Students>(context, listen: false).currentStudent;
-      dateinput.text = editeStudent?.brithDate == null
-          ? ''
-          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-
-      _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
-
-      _initValues['firstName'] = editeStudent?.firstName ?? '';
-      _initValues['lastName'] = editeStudent?.lastName ?? '';
-      ;
-      _initValues['email'] = editeStudent?.email ?? '';
-      ;
-      _initValues['birthDate'] = editeStudent?.brithDate == null
-          ? ''
-          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-      _initValues['grade'] = editeStudent?.grade.toString() ?? '';
-      _initValues['birthDate'] = editeStudent?.brithDate == null
-          ? ''
-          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-
-      println('curent ${editeStudent!.brithDate.toString()}');
-    } else {
-      if (editeStudent == null) {
-        editeStudent = Student.init();
-
+    if (_init) {
+      if (studentId != null) {
+        _isLoading = true;
+        await Provider.of<Students>(context, listen: false).findById(studentId);
+        editeStudent =
+            Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
+        await Provider.of<Grades>(context, listen: false).getGradeById(3);
+        println('after find by id grade');
+        println(Provider.of<Grades>(context, listen: false)
+            .currentGrad!
+            .id
+            .toString());
+        // DropdownButtonGrade =
+        //     Provider.of<Grades>(context, listen: false).currentGrad!;
+
+        setState(() {
+          _isLoading = false;
+        });
+        _init = false;
+
+        dateinput.text = editeStudent?.brithDate == null
+            ? ''
+            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+
+        _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
+
+        _initValues['firstName'] = editeStudent?.firstName ?? '';
+        _initValues['lastName'] = editeStudent?.lastName ?? '';
+        ;
+        _initValues['email'] = editeStudent?.email ?? '';
+        ;
+        _initValues['birthDate'] = editeStudent?.brithDate == null
+            ? ''
+            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+        _initValues['grade'] = editeStudent?.grade.toString() ?? '';
+        _initValues['birthDate'] = editeStudent?.brithDate == null
+            ? ''
+            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+
+        println('curent ${editeStudent!.brithDate.toString()}');
+      } else {
+        _isLoading = true;
+        // await Provider.of<Students>(context, listen: false)
+        //  .findById(993.toString());
+        editeStudent =
+            Provider.of<Students>(context, listen: false).currentStudent;
+        await getGradeList();
+        await Provider.of<Grades>(context, listen: false).getGradeById(3);
+        DropdownButtonGrade =
+            Provider.of<Grades>(context, listen: false).currentGrad;
+        println('after find by id grade');
+        println(Provider.of<Grades>(context, listen: false)
+            .currentGrad!
+            .id
+            .toString());
+        // DropdownButtonGrade =
+        //     Provider.of<Grades>(context, listen: false).currentGrad!;
 
         setState(() {
           _isLoading = false;
         });
       }
     }
-
     super.didChangeDependencies();
   }
 
@@ -511,7 +531,11 @@ class _StudenFormState extends State<StudenForm> {
                         ],
                       ),
                       DropdownButton<Grade>(
-                          value: DropdownButtonGrade,
+                          value: itemsGrade.length == 0 ||
+                                  DropdownButtonGrade == null
+                              ? null
+                              : itemsGrade.firstWhere((element) =>
+                                  element.id == DropdownButtonGrade?.id),
                           icon: const Icon(Icons.arrow_downward,
                               color: Colors.red),
                           elevation: 16,
@@ -530,7 +554,7 @@ class _StudenFormState extends State<StudenForm> {
                           }).toList(),
                           itemHeight: 50,
                           onChanged: (value) {
-                            print('grad id  =  $value');
+                            print('grad id  =  ${value?.nameAr}');
                             setState(() {
                               DropdownButtonGrade = value;
                               //    print('grad id  =  {$value.id}');
