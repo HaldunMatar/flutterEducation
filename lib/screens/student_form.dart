@@ -28,6 +28,7 @@ class StudenForm extends StatefulWidget {
 
 class _StudenFormState extends State<StudenForm> {
   Student? editeStudent;
+  Grade? grade;
   io.File _file = io.File("zz");
 
   Uint8List webImagereadAsBytes = Uint8List(10);
@@ -497,10 +498,12 @@ class _StudenFormState extends State<StudenForm> {
                         ],
                       ),
                       DropdownButton<Grade>(
-                          value: itemsGrade.length == 0 || gradeid == null
-                              ? null
-                              : itemsGrade.firstWhere(
-                                  (element) => element.id == gradeid),
+                          value: DropdownButtonGrade == null
+                              ? itemsGrade.length == 0 || gradeid == null
+                                  ? null
+                                  : itemsGrade.firstWhere(
+                                      (element) => element.id == gradeid)
+                              : DropdownButtonGrade,
                           icon: const Icon(Icons.arrow_downward,
                               color: Colors.red),
                           elevation: 16,
@@ -521,8 +524,8 @@ class _StudenFormState extends State<StudenForm> {
                           onChanged: (value) {
                             print('grad id  =  ${value?.nameAr}');
                             setState(() {
-                              //  DropdownButtonGrade = value;
-                              //    print('grad id  =  {$value.id}');
+                              DropdownButtonGrade = value;
+                              print('grad id  =  {$value.id}');
                               editeStudent = Student(
                                   firstName: editeStudent!.firstName,
                                   lastName: editeStudent!.lastName,
