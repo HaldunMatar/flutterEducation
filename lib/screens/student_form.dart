@@ -36,7 +36,7 @@ class _StudenFormState extends State<StudenForm> {
   late Image imageweb;
   XFile? pickedImage;
   TextEditingController dateinput = TextEditingController();
-
+  int? gradeid;
   List<Grade> itemsGrade = [];
 
   Grade? DropdownButtonGrade;
@@ -56,7 +56,6 @@ class _StudenFormState extends State<StudenForm> {
     await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
 
     itemsGrade = Provider.of<Grades>(context, listen: false).listGrade;
-    print('getGradeListByPage');
   }
 
   @override
@@ -110,9 +109,9 @@ class _StudenFormState extends State<StudenForm> {
     if (editeStudent != null) {
       editeStudent?.imageuri =
           Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
-      print('begin  uploads ');
+      // print('begin  uploads ');
       if (kIsWeb) {
-        print('addStudentweb   uploads ');
+        //   print('addStudentweb   uploads ');
         // await Provider.of<Students>(context, listen: false).addStudentweb(
         //     editeStudent!, webImagereadAsBytes, imageweb, pickedImage);
       } else {
@@ -150,13 +149,10 @@ class _StudenFormState extends State<StudenForm> {
 
   bool _init = true;
   Future<void> didChangeDependencies() async {
-    // final studentId = ModalRoute.of(context)?.settings.arguments as String?;
-    final studentId = '993';
-    println(' didChangeDependencies studentId  $studentId ');
+    final studentId = ModalRoute.of(context)?.settings.arguments as String?;
     setState(() {
       _isLoading = false;
     });
-    // ignore: unnecessary_null_comparison
     if (_init) {
       if (studentId != null) {
         _isLoading = true;
@@ -164,31 +160,14 @@ class _StudenFormState extends State<StudenForm> {
         editeStudent =
             Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
-        await Provider.of<Grades>(context, listen: false).getGradeById(3);
-        println('after find by id grade');
-        println(Provider.of<Grades>(context, listen: false)
-            .currentGrad!
-            .id
-            .toString());
-        // DropdownButtonGrade =
-        //     Provider.of<Grades>(context, listen: false).currentGrad!;
-
-        setState(() {
-          _isLoading = false;
-        });
-        _init = false;
-
+        gradeid = editeStudent?.grade;
         dateinput.text = editeStudent?.brithDate == null
             ? ''
             : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-
         _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
-
         _initValues['firstName'] = editeStudent?.firstName ?? '';
         _initValues['lastName'] = editeStudent?.lastName ?? '';
-        ;
         _initValues['email'] = editeStudent?.email ?? '';
-        ;
         _initValues['birthDate'] = editeStudent?.brithDate == null
             ? ''
             : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
@@ -196,26 +175,14 @@ class _StudenFormState extends State<StudenForm> {
         _initValues['birthDate'] = editeStudent?.brithDate == null
             ? ''
             : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-
-        println('curent ${editeStudent!.brithDate.toString()}');
+        setState(() {
+          _isLoading = false;
+        });
       } else {
         _isLoading = true;
-        // await Provider.of<Students>(context, listen: false)
-        //  .findById(993.toString());
         editeStudent =
             Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
-        await Provider.of<Grades>(context, listen: false).getGradeById(3);
-        DropdownButtonGrade =
-            Provider.of<Grades>(context, listen: false).currentGrad;
-        println('after find by id grade');
-        println(Provider.of<Grades>(context, listen: false)
-            .currentGrad!
-            .id
-            .toString());
-        // DropdownButtonGrade =
-        //     Provider.of<Grades>(context, listen: false).currentGrad!;
-
         setState(() {
           _isLoading = false;
         });
@@ -225,7 +192,6 @@ class _StudenFormState extends State<StudenForm> {
   }
 
   final _formKey = GlobalKey<FormState>();
-
   void dispose() {
     dateinput.dispose();
     super.dispose();
@@ -531,11 +497,10 @@ class _StudenFormState extends State<StudenForm> {
                         ],
                       ),
                       DropdownButton<Grade>(
-                          value: itemsGrade.length == 0 ||
-                                  DropdownButtonGrade == null
+                          value: itemsGrade.length == 0 || gradeid == null
                               ? null
-                              : itemsGrade.firstWhere((element) =>
-                                  element.id == DropdownButtonGrade?.id),
+                              : itemsGrade.firstWhere(
+                                  (element) => element.id == gradeid),
                           icon: const Icon(Icons.arrow_downward,
                               color: Colors.red),
                           elevation: 16,
@@ -556,7 +521,7 @@ class _StudenFormState extends State<StudenForm> {
                           onChanged: (value) {
                             print('grad id  =  ${value?.nameAr}');
                             setState(() {
-                              DropdownButtonGrade = value;
+                              //  DropdownButtonGrade = value;
                               //    print('grad id  =  {$value.id}');
                               editeStudent = Student(
                                   firstName: editeStudent!.firstName,

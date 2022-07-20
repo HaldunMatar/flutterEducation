@@ -33,11 +33,7 @@ class _StudentListViewState extends State<StudentListView> {
     try {
       final newItems = await Provider.of<Students>(context, listen: false)
           .getStudentListByPage(pageKey, _pageSize, searchString);
-
-      print('items from fettchpage methode   ${newItems.length}');
       final isLastPage = newItems.length < _pageSize;
-      print(' _fetchPage  length is  ${newItems.length}');
-      ;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
         // _pagingController.refresh();

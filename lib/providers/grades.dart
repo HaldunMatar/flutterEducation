@@ -100,7 +100,7 @@ class Grades with ChangeNotifier {
           nameTr: jsonResponRes['nameTr'],
         );
 
-        print('getGradeById  getGradeById  ${currentGrad?.nameAr}');
+        print('nameAr  nameAr  ${currentGrad?.nameAr}');
       } else {
         print('there is Error  in request with state${responRes.statusCode}');
       }

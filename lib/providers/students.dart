@@ -245,15 +245,12 @@ class Students with ChangeNotifier {
         final jsonResponRes =
             convert.jsonDecode(utf8.decode(responRes.bodyBytes));
 
-        // print("findById11$jsonResponRes['birthDate']");
-        print('gggggggggggggggggggggggggggggggggggggggggggggggggg');
-
-        print(jsonResponRes['birthDate']);
         currentStudent = Student(
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
             lastName: jsonResponRes['lastName'],
             email: jsonResponRes['email'],
+            grade: jsonResponRes['grade'],
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
                 .add(Duration(days: 1)));
       } else {
