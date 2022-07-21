@@ -150,6 +150,7 @@ class _StudenFormState extends State<StudenForm> {
 
   bool _init = true;
   Future<void> didChangeDependencies() async {
+    print('didChangeDependencies');
     final studentId = ModalRoute.of(context)?.settings.arguments as String?;
     setState(() {
       _isLoading = false;
@@ -162,6 +163,7 @@ class _StudenFormState extends State<StudenForm> {
             Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
         gradeid = editeStudent?.grade;
+        // remove this line
         dateinput.text = editeStudent?.brithDate == null
             ? ''
             : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
@@ -181,8 +183,8 @@ class _StudenFormState extends State<StudenForm> {
         });
       } else {
         _isLoading = true;
-        editeStudent =
-            Provider.of<Students>(context, listen: false).currentStudent;
+        //  editeStudent =
+        //     Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
         setState(() {
           _isLoading = false;
@@ -498,11 +500,13 @@ class _StudenFormState extends State<StudenForm> {
                         ],
                       ),
                       DropdownButton<Grade>(
-                          value: DropdownButtonGrade == null
-                              ? itemsGrade.length == 0 || gradeid == null
-                                  ? null
-                                  : itemsGrade.firstWhere(
-                                      (element) => element.id == gradeid)
+                          value: gradeid != null
+                              ? DropdownButtonGrade == null
+                                  ? itemsGrade.length == 0 || gradeid == null
+                                      ? null
+                                      : itemsGrade.firstWhere(
+                                          (element) => element.id == gradeid)
+                                  : DropdownButtonGrade
                               : DropdownButtonGrade,
                           icon: const Icon(Icons.arrow_downward,
                               color: Colors.red),
@@ -522,16 +526,16 @@ class _StudenFormState extends State<StudenForm> {
                           }).toList(),
                           itemHeight: 50,
                           onChanged: (value) {
-                            print('grad id  =  ${value?.nameAr}');
+                            // print('grad id  =  ${value?.nameAr}');
                             setState(() {
                               DropdownButtonGrade = value;
-                              print('grad id  =  {$value.id}');
-                              editeStudent = Student(
+                              // print('grad id  =  {$value.id}');
+                              /*     editeStudent = Student(
                                   firstName: editeStudent!.firstName,
                                   lastName: editeStudent!.lastName,
                                   email: editeStudent!.email,
                                   brithDate: editeStudent!.brithDate,
-                                  grade: value?.id);
+                                  grade: value?.id);*/
                             });
                           })
                     ],
