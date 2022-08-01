@@ -22,16 +22,16 @@ class _GradeListViewState extends State<GradeListView> {
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
-      print('addPageRequestListener');
+      //    print('addPageRequestListener');
       _fetchGradePage(pageKey);
     });
     super.initState();
   }
 
   Future<void> _fetchGradePage(int pageKey) async {
-    print('_fetchGradePage $pageKey');
+    // print('_fetchGradePage $pageKey');
 
-    print('_fetchGradePage');
+    //  print('_fetchGradePage');
     try {
       final newItems = await Provider.of<Grades>(context, listen: false)
           .getGradeListByPage(pageKey, _pageSize);

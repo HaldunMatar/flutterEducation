@@ -163,6 +163,13 @@ class _StudenFormState extends State<StudenForm> {
             Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
         gradeid = editeStudent?.grade;
+        try {
+          DropdownButtonGrade =
+              itemsGrade.firstWhere((element) => element.id == gradeid);
+        } catch (e) {
+          DropdownButtonGrade = null;
+        }
+
         // remove this line
         dateinput.text = editeStudent?.brithDate == null
             ? ''
@@ -182,6 +189,7 @@ class _StudenFormState extends State<StudenForm> {
           _isLoading = false;
         });
       } else {
+        editeStudent = new Student.init();
         _isLoading = true;
         //  editeStudent =
         //     Provider.of<Students>(context, listen: false).currentStudent;
@@ -500,25 +508,24 @@ class _StudenFormState extends State<StudenForm> {
                         ],
                       ),
                       DropdownButton<Grade>(
-                          value: gradeid != null
+                          value: DropdownButtonGrade,
+                          /*gradeid != null
                               ? DropdownButtonGrade == null
                                   ? itemsGrade.length == 0 || gradeid == null
                                       ? null
                                       : itemsGrade.firstWhere(
                                           (element) => element.id == gradeid)
                                   : DropdownButtonGrade
-                              : DropdownButtonGrade,
+                              : DropdownButtonGrade,*/
                           icon: const Icon(Icons.arrow_downward,
                               color: Colors.red),
                           elevation: 16,
-                          // style: const TextStyle(color: Color.fromARGB(255, 5, 1, 0)),
                           underline: Container(
                             height: 2,
                             color: Colors.green,
                           ),
                           items: itemsGrade
                               .map<DropdownMenuItem<Grade>>((Grade value) {
-                            //  print('itemsGrade is  =  $itemsGrade.length');
                             return DropdownMenuItem<Grade>(
                               value: value,
                               child: Text(value.nameAr),
@@ -526,16 +533,9 @@ class _StudenFormState extends State<StudenForm> {
                           }).toList(),
                           itemHeight: 50,
                           onChanged: (value) {
-                            // print('grad id  =  ${value?.nameAr}');
                             setState(() {
                               DropdownButtonGrade = value;
-                              // print('grad id  =  {$value.id}');
-                              /*     editeStudent = Student(
-                                  firstName: editeStudent!.firstName,
-                                  lastName: editeStudent!.lastName,
-                                  email: editeStudent!.email,
-                                  brithDate: editeStudent!.brithDate,
-                                  grade: value?.id);*/
+                              editeStudent?.grade = value?.id;
                             });
                           })
                     ],

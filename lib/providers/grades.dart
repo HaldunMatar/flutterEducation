@@ -69,7 +69,7 @@ class Grades with ChangeNotifier {
   }
 
   Future<void> getGradeById(int gradid) async {
-    print('getGradeById $gradid');
+    //print('getGradeById $gradid');
     var url = Uri.http(Setting.basicUrl, '/grades/gradeById/$gradid');
 
     try {
@@ -100,7 +100,7 @@ class Grades with ChangeNotifier {
           nameTr: jsonResponRes['nameTr'],
         );
 
-        print('nameAr  nameAr  ${currentGrad?.nameAr}');
+        //   print('nameAr  nameAr  ${currentGrad?.nameAr}');
       } else {
         print('there is Error  in request with state${responRes.statusCode}');
       }

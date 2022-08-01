@@ -187,7 +187,7 @@ class Students with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
-        print(parsed);
+        //  print(parsed);
         try {
           image != null
               ? await uploadImage(
@@ -211,25 +211,25 @@ class Students with ChangeNotifier {
     final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
     var request = http.MultipartRequest('POST', url);
 
-    print(image.path.toString());
+    //  print(image.path.toString());
     var takenPicture =
         await http.MultipartFile.fromPath("file", image.path.toString());
     request.fields.addAll({'fileid': parseid});
     request.files.add(takenPicture);
-    print('afrer  takenPicture   belote ');
+    // print('afrer  takenPicture   belote ');
 
     var response = await request.send();
     if (response.statusCode == 200) {
-      print('Image  Student is uploadedImage  Student is uploaded!');
+      // print('Image  Student is uploadedImage  Student is uploaded!');
     } else {
-      print('Image Student  not uploaded');
+      //  print('Image Student  not uploaded');
     }
   }
 
   Future findById(String studentId) async {
     var url = Uri.http(Setting.basicUrl, '/students/get/$studentId');
     // print('length Grade Grade Grade Grade Grade Grade ');
-    print(' findById  ${url.toString()}');
+    // print(' findById  ${url.toString()}');
     try {
       var responRes = await http.get(
         url,
@@ -244,7 +244,6 @@ class Students with ChangeNotifier {
         const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(utf8.decode(responRes.bodyBytes));
-
         currentStudent = Student(
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
@@ -254,7 +253,7 @@ class Students with ChangeNotifier {
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
                 .add(Duration(days: 1)));
       } else {
-        print(responRes.body);
+        //  print(responRes.body);
       }
     } catch (error) {
       print(error.toString());
