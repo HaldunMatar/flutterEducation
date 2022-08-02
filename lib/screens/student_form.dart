@@ -148,15 +148,17 @@ class _StudenFormState extends State<StudenForm> {
     ).show();
   }
 
+  var studentId;
   bool _init = true;
   Future<void> didChangeDependencies() async {
     print('didChangeDependencies');
-    final studentId = ModalRoute.of(context)?.settings.arguments as String?;
+    studentId = ModalRoute.of(context)?.settings.arguments as String?;
     setState(() {
       _isLoading = false;
     });
     if (_init) {
       if (studentId != null) {
+        print(studentId);
         _isLoading = true;
         await Provider.of<Students>(context, listen: false).findById(studentId);
         editeStudent =
@@ -476,21 +478,21 @@ class _StudenFormState extends State<StudenForm> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 clipBehavior: Clip.hardEdge,
                                 child: _imageFile != null
-                                    ? kIsWeb
-                                        ? Image.memory(
-                                            webImagereadAsBytes,
-                                            fit: BoxFit.fill,
-                                          ) //
-                                        : Image.file(
-                                            _imageFile!,
-                                            fit: BoxFit.fill,
-                                            // width: 75,
-                                            // height: 75,
-                                          )
-                                    : Image.network(
-                                        'http://${Setting.basicUrl}/downloadFile/person.png',
+                                    ? Image.file(
+                                        _imageFile!,
                                         fit: BoxFit.fill,
-                                      ),
+                                        // width: 75,
+                                        // height: 75,
+                                      )
+                                    : (studentId != null)
+                                        ? Image.network(
+                                            'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
+                                            fit: BoxFit.fill,
+                                          )
+                                        : Image.network(
+                                            'http://${Setting.basicUrl}/downloadFile/person.png',
+                                            fit: BoxFit.fill,
+                                          ),
                               ),
                             ),
                           ),
