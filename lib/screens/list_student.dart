@@ -16,22 +16,24 @@ class StudentListView extends StatefulWidget {
 }
 
 class _StudentListViewState extends State<StudentListView> {
-  static const _pageSize = 1;
+  static const _pageSize = 20;
   PagingController<int, Student> _pagingController =
       PagingController(firstPageKey: 0);
 
   String? _searchTerm;
 
+  bool loading = false;
+
   @override
   void initState() {
     _pagingController.addPageRequestListener((pageKey) {
-      _fetchPage(context, pageKey);
+      _fetchPage(pageKey);
     });
 
     super.initState();
   }
 
-  Future<void> _fetchPage(BuildContext context, int pageKey) async {
+  Future<void> _fetchPage(int pageKey) async {
     try {
       final newItems = await Provider.of<Students>(context, listen: false)
           .getStudentListByPage(pageKey, _pageSize, _searchTerm);
@@ -39,11 +41,9 @@ class _StudentListViewState extends State<StudentListView> {
       final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         _pagingController.appendLastPage(newItems);
-        // _pagingController.refresh();
       } else {
         final int? nextPageKey = (pageKey + newItems.length);
         _pagingController.appendPage(newItems, nextPageKey);
-        // _pagingController.refresh();
       }
     } catch (error) {
       _pagingController.error = error;
@@ -53,7 +53,7 @@ class _StudentListViewState extends State<StudentListView> {
   @override
   Widget build(BuildContext context) {
     var students = Provider.of<Students>(context, listen: true);
-    print('buildbuildbuildbuildbuildbuildbuildbuildbuildbuild');
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Studet List View'),
@@ -92,53 +92,8 @@ class _StudentListViewState extends State<StudentListView> {
             PagedSliverList<int, Student>(
               pagingController: _pagingController,
               builderDelegate: PagedChildBuilderDelegate<Student>(
-                itemBuilder: (context, item, index) => ListTile(
-                  key: ValueKey(item.id.toString()),
-                  leading: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(
-                      'http://${Setting.basicUrl}/downloadFile/${item.id}.jpg',
-                    ),
-                  ),
-                  title: Text(item.firstName),
-                  subtitle: Text(item.id.toString()),
-                  trailing: Container(
-                    child: Container(
-                      width: 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  StudenForm.routeName,
-                                  arguments: item.id.toString());
-                            },
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {
-                              //  context.read<Students>().deletestudent(item.id);
-                              //  setState(() {
-                              // Provider.of<Students>(context, listen: true)
-                              //  setState(() {
-                              students.deletestudent(item.id);
-                              //   _fetchPage(context, 0);
-                              _pagingController.refresh();
-
-                              //   });
-
-                              //  });
-                            },
-                            color: Theme.of(context).errorColor,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                itemBuilder: ((context, item, index) =>
+                    getListItemForPage(context, item, index, students)),
               ),
             ),
           ],
@@ -198,6 +153,46 @@ class _StudentListViewState extends State<StudentListView> {
           },
         ));
   }
+
+  Widget getListItemForPage(context, item, index, Students std) => ListTile(
+        key: ValueKey(item.id.toString()),
+        leading: CircleAvatar(
+          radius: 30,
+          backgroundImage: NetworkImage(
+            'http://${Setting.basicUrl}/downloadFile/${item.id}.jpg',
+          ),
+        ),
+        title: Text(item.firstName),
+        subtitle: Text(item.id.toString()),
+        trailing: Container(
+          child: Container(
+            width: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(StudenForm.routeName,
+                        arguments: item.id.toString());
+                  },
+                  color: Theme.of(context).primaryColor,
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () async {
+                    //   var students = Provider.of<Students>(context, listen: true);
+                    await std.deletestudent(item.id);
+                    //  loading = false;
+                    _pagingController.refresh();
+                  },
+                  color: Theme.of(context).errorColor,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
   void _updateSearchTerm(String searchTerm) {
     _searchTerm = searchTerm;

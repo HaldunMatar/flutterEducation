@@ -10,9 +10,6 @@ import 'package:intl/intl.dart';
 
 import 'dart:convert' as convert;
 
-
-
-
 class Students with ChangeNotifier {
   bool deleteprocess = false;
 
@@ -146,10 +143,9 @@ class Students with ChangeNotifier {
     return _listStudent;
   }
 
-  addStudent(Student editeStudent, io.File image, Image imageupload,
-      XFile? pickedImage) async {
+  addStudent(Student editeStudent) async {
     final url = Uri.http(Setting.basicUrl, '/students/new/');
-
+    print('father add  ${editeStudent.father} ');
     String? date;
 
     if (editeStudent.brithDate == null) {
@@ -157,12 +153,7 @@ class Students with ChangeNotifier {
     } else {
       date = DateFormat('yyyy-MM-dd').format(editeStudent.brithDate!);
     }
-
-    print(date.toString());
     try {
-      //  print(' before addStudent');
-      //  print(editeStudent.);
-
       final response = await http.post(
         url,
         headers: {
@@ -172,23 +163,21 @@ class Students with ChangeNotifier {
         },
         body: json.encode({
           'firstName': editeStudent.firstName,
+          'father': editeStudent.father,
+          'mother': editeStudent.mother,
           'lastName': editeStudent.lastName,
           'email': editeStudent.email,
           "birthDate": date,
           "grade": editeStudent.grade,
-          //  "grade": 4,
           "imageuri": editeStudent.imageuri,
         }),
       );
-      // print(editeStudent.toString());
-
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
-        //  print(parsed);
+        print(parsed);
         try {
-          image != null
-              ? await uploadImage(
-                  image, parsed['id'].toString(), imageupload, pickedImage)
+          editeStudent.image != null
+              ? await uploadImage(editeStudent.image, parsed['id'].toString())
               : null;
         } on Exception catch (error) {
           print(" Image can not store o server $error.toString() ");
@@ -203,14 +192,16 @@ class Students with ChangeNotifier {
     }
   }
 
-  Future uploadImage(io.File image, String parseid, Image imageupload,
-      XFile? pickedImage) async {
+  Future uploadImage(
+    io.File? image,
+    String parseid,
+  ) async {
     final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
     var request = http.MultipartRequest('POST', url);
 
     //  print(image.path.toString());
-    var takenPicture =
-        await http.MultipartFile.fromPath("file", image.path.toString());
+    var takenPicture = await http.MultipartFile.fromPath(
+        "file", image == null ? '' : image.path.toString());
     request.fields.addAll({'fileid': parseid});
     request.files.add(takenPicture);
     // print('afrer  takenPicture   belote ');

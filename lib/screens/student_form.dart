@@ -47,6 +47,8 @@ class _StudenFormState extends State<StudenForm> {
     'id': '',
     'firstName': '',
     'lastName': '',
+    'father': '',
+    'mother': '',
     'email': '',
     'birthDate': '',
     'grade': '',
@@ -82,17 +84,17 @@ class _StudenFormState extends State<StudenForm> {
       }
       _imageFile = io.File(pickedImage!.path);
       path.basename(pickedImage!.path);
-
+      editeStudent?.image = _imageFile;
       setState(() {
         if (kIsWeb) {
           webImagereadAsBytes = webImagereadAsBytes;
           _imageFile = io.File(pickedImage!.path);
+          editeStudent?.image = _imageFile;
         } else {
           _imageFile = io.File(pickedImage!.path);
+          editeStudent?.image = _imageFile;
         }
-        //  print(pickedImage!.path);
         editeStudent?.imageuri = path.basename(pickedImage!.path);
-        // print(editeStudent?.imageuri);
       });
     } on Exception catch (error) {
       print(" you do do not take image correctly  $error.toString() ");
@@ -105,19 +107,24 @@ class _StudenFormState extends State<StudenForm> {
     if (!isValid!) {
       return;
     }
-
     _formKey.currentState?.save();
     if (editeStudent != null) {
       editeStudent?.imageuri =
           Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
+      editeStudent?.image = _imageFile;
       // print('begin  uploads ');
       if (kIsWeb) {
         //   print('addStudentweb   uploads ');
         // await Provider.of<Students>(context, listen: false).addStudentweb(
         //     editeStudent!, webImagereadAsBytes, imageweb, pickedImage);
       } else {
+        print("save savesavesavesave");
+        print(editeStudent?.image);
+        print("save savesavesavesave");
+        print('father edite object ${editeStudent?.father}');
+
         await Provider.of<Students>(context, listen: false)
-            .addStudent(editeStudent!, _imageFile!, image, pickedImage);
+            .addStudent(editeStudent!);
       }
     } else {
       AwesomeDialog(
@@ -143,7 +150,7 @@ class _StudenFormState extends State<StudenForm> {
       btnOkOnPress: () {
         //Navigator.pop(context);
 
-        Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
+        //  Navigator.of(context).pushReplacementNamed(StudentListView.routeName);
       },
     ).show();
   }
@@ -179,6 +186,8 @@ class _StudenFormState extends State<StudenForm> {
         _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
         _initValues['firstName'] = editeStudent?.firstName ?? '';
         _initValues['lastName'] = editeStudent?.lastName ?? '';
+        _initValues['father'] = editeStudent?.father ?? '';
+        _initValues['mother'] = editeStudent?.mother ?? '';
         _initValues['email'] = editeStudent?.email ?? '';
         _initValues['birthDate'] = editeStudent?.brithDate == null
             ? ''
@@ -193,8 +202,6 @@ class _StudenFormState extends State<StudenForm> {
       } else {
         editeStudent = new Student.init();
         _isLoading = true;
-        //  editeStudent =
-        //     Provider.of<Students>(context, listen: false).currentStudent;
         await getGradeList();
         setState(() {
           _isLoading = false;
@@ -265,7 +272,9 @@ class _StudenFormState extends State<StudenForm> {
                           if (value != null || value!.isNotEmpty) {
                             editeStudent = Student(
                                 firstName: value,
+                                father: editeStudent!.father,
                                 lastName: editeStudent!.lastName,
+                                mother: editeStudent!.mother,
                                 email: editeStudent!.email.toString(),
                                 grade: editeStudent!.grade,
                                 brithDate: editeStudent!.brithDate);
@@ -293,6 +302,8 @@ class _StudenFormState extends State<StudenForm> {
                           if (value != null || value!.isNotEmpty) {
                             editeStudent = Student(
                                 firstName: editeStudent!.firstName,
+                                father: editeStudent!.father,
+                                mother: editeStudent!.mother,
                                 lastName: value,
                                 grade: editeStudent!.grade,
                                 email: editeStudent!.email.toString(),
@@ -307,7 +318,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: _initValues['lastName'],
+                        initialValue: _initValues['father'],
                         decoration: InputDecoration(label: Text('fathr Name ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -319,11 +330,14 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            /*editeStudent = Student(
-                          firstName: value,
-                          lastName: editeStudent!.lastName,
-                          email: editeStudent!.email.toString(),
-                          brithDate: editeStudent!.brithDate);*/
+                            print('father value  ${value} ');
+                            editeStudent = Student(
+                                firstName: editeStudent!.firstName,
+                                father: value,
+                                mother: editeStudent!.mother,
+                                lastName: editeStudent!.lastName,
+                                email: editeStudent!.email.toString(),
+                                brithDate: editeStudent!.brithDate);
                           }
 
                           print('onField onSaved  fathr Name  ');
@@ -346,7 +360,15 @@ class _StudenFormState extends State<StudenForm> {
                         },
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {}
+                          if (value != null || value!.isNotEmpty) {
+                            editeStudent = Student(
+                                firstName: editeStudent!.firstName,
+                                father: editeStudent!.father,
+                                mother: value,
+                                lastName: editeStudent!.lastName,
+                                email: editeStudent!.email.toString(),
+                                brithDate: editeStudent!.brithDate);
+                          }
 
                           // print('onField onSaved  Mother Name  ');
                         },
@@ -427,6 +449,8 @@ class _StudenFormState extends State<StudenForm> {
                               firstName: editeStudent!.firstName,
                               lastName: editeStudent!.lastName,
                               email: editeStudent!.email,
+                              father: editeStudent!.father,
+                              mother: editeStudent!.mother,
                               grade: editeStudent!.grade,
                             );
                           }
@@ -448,6 +472,8 @@ class _StudenFormState extends State<StudenForm> {
                                 lastName: editeStudent!.lastName,
                                 grade: editeStudent!.grade,
                                 email: value,
+                                mother: editeStudent!.mother,
+                                father: editeStudent!.father,
                                 brithDate: editeStudent!.brithDate);
                           }
                         },
