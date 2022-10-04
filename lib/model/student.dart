@@ -16,12 +16,15 @@ class Student with ChangeNotifier {
 
   File? image;
 
+  int? TC;
+
   Student(
       {this.id,
       required this.firstName,
       required this.lastName,
       required this.email,
       required this.brithDate,
+      this.TC,
       this.father,
       this.mother,
       this.grade,

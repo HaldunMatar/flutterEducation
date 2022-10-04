@@ -45,6 +45,7 @@ class _StudenFormState extends State<StudenForm> {
 
   var _initValues = {
     'id': '',
+    'TC': '',
     'firstName': '',
     'lastName': '',
     'father': '',
@@ -185,6 +186,7 @@ class _StudenFormState extends State<StudenForm> {
             : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
         _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
         _initValues['firstName'] = editeStudent?.firstName ?? '';
+        _initValues['TC'] = editeStudent?.TC.toString() ?? '';
         _initValues['lastName'] = editeStudent?.lastName ?? '';
         _initValues['father'] = editeStudent?.father ?? '';
         _initValues['mother'] = editeStudent?.mother ?? '';
@@ -249,7 +251,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {}
-
+                          // editeStudent?.id = int.parse(value);
                           //  print('onField onSaved  ID  ');
                         },
                         onFieldSubmitted: (value) {
@@ -270,14 +272,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            editeStudent = Student(
-                                firstName: value,
-                                father: editeStudent!.father,
-                                lastName: editeStudent!.lastName,
-                                mother: editeStudent!.mother,
-                                email: editeStudent!.email.toString(),
-                                grade: editeStudent!.grade,
-                                brithDate: editeStudent!.brithDate);
+                            editeStudent?.firstName = value;
                           }
 
                           //('onField onSaved  First Name  ');
@@ -300,14 +295,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            editeStudent = Student(
-                                firstName: editeStudent!.firstName,
-                                father: editeStudent!.father,
-                                mother: editeStudent!.mother,
-                                lastName: value,
-                                grade: editeStudent!.grade,
-                                email: editeStudent!.email.toString(),
-                                brithDate: editeStudent!.brithDate);
+                            editeStudent?.lastName = value;
                           }
 
                           print('onField onSaved  Last Name  ');
@@ -330,17 +318,8 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            print('father value  ${value} ');
-                            editeStudent = Student(
-                                firstName: editeStudent!.firstName,
-                                father: value,
-                                mother: editeStudent!.mother,
-                                lastName: editeStudent!.lastName,
-                                email: editeStudent!.email.toString(),
-                                brithDate: editeStudent!.brithDate);
+                            editeStudent?.father = value;
                           }
-
-                          print('onField onSaved  fathr Name  ');
                         },
                         onFieldSubmitted: (value) {
                           // print('onFieldSubmitted fathr Name');
@@ -361,13 +340,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            editeStudent = Student(
-                                firstName: editeStudent!.firstName,
-                                father: editeStudent!.father,
-                                mother: value,
-                                lastName: editeStudent!.lastName,
-                                email: editeStudent!.email.toString(),
-                                brithDate: editeStudent!.brithDate);
+                            editeStudent?.mother = value;
                           }
 
                           // print('onField onSaved  Mother Name  ');
@@ -378,7 +351,7 @@ class _StudenFormState extends State<StudenForm> {
                         keyboardType: TextInputType.text,
                       ),
                       TextFormField(
-                        initialValue: _initValues['id'],
+                        initialValue: _initValues['TC'],
                         decoration: InputDecoration(label: Text(' TC ')),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -390,11 +363,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null || value!.isNotEmpty) {
-                            /*editeStudent = Student(
-                          firstName: value,
-                          lastName: editeStudent!.lastName,
-                          email: editeStudent!.email.toString(),
-                          brithDate: editeStudent!.brithDate);*/
+                            editeStudent?.TC = int.parse(value);
                           }
 
                           //print('onField onSaved  TC  ');
@@ -444,15 +413,7 @@ class _StudenFormState extends State<StudenForm> {
                         onSaved: (newValue) {
                           // print('updatedDt ' + newValue!);
                           if (newValue != null && newValue != '') {
-                            editeStudent = Student(
-                              brithDate: DateTime.parse(newValue),
-                              firstName: editeStudent!.firstName,
-                              lastName: editeStudent!.lastName,
-                              email: editeStudent!.email,
-                              father: editeStudent!.father,
-                              mother: editeStudent!.mother,
-                              grade: editeStudent!.grade,
-                            );
+                            editeStudent?.brithDate = DateTime.parse(newValue);
                           }
                         },
                         onFieldSubmitted: (value) {
@@ -467,14 +428,7 @@ class _StudenFormState extends State<StudenForm> {
                         textInputAction: TextInputAction.next,
                         onSaved: (value) {
                           if (value != null) {
-                            editeStudent = Student(
-                                firstName: editeStudent!.firstName,
-                                lastName: editeStudent!.lastName,
-                                grade: editeStudent!.grade,
-                                email: value,
-                                mother: editeStudent!.mother,
-                                father: editeStudent!.father,
-                                brithDate: editeStudent!.brithDate);
+                            editeStudent?.email = value;
                           }
                         },
                         onFieldSubmitted: (value) {

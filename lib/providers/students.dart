@@ -36,7 +36,6 @@ class Students with ChangeNotifier {
             convert.jsonDecode(responRes.body) as List<dynamic>;
 
         var itemCount = jsonResponRes.length;
-        // print('length is  $itemCount');
 
         // print('list length ${jsonResponRes[5].toString()}');
         jsonResponRes.forEach((element) {
@@ -44,6 +43,7 @@ class Students with ChangeNotifier {
               id: element['id'],
               lastName: element['firstName'],
               email: element['firstName'],
+              TC: element['TC'],
               firstName: element['firstName'],
               brithDate: element['brithDate']));
           // print(element['id']);
@@ -80,6 +80,9 @@ class Students with ChangeNotifier {
               id: element['id'],
               lastName: element['firstName'],
               email: element['firstName'],
+              TC: element['TC'],
+              father: element['father'],
+              mother: element['mother'],
               firstName: element['firstName'],
               brithDate: element['brithDate']));
         });
@@ -125,7 +128,10 @@ class Students with ChangeNotifier {
           _listStudent.add(Student(
               id: element['id'],
               lastName: element['firstName'],
+              father: element['father'],
+              mother: element['mother'],
               email: element['firstName'],
+              TC: element['TC'],
               firstName: element['firstName'],
               brithDate: finaldate));
 
@@ -145,7 +151,7 @@ class Students with ChangeNotifier {
 
   addStudent(Student editeStudent) async {
     final url = Uri.http(Setting.basicUrl, '/students/new/');
-    print('father add  ${editeStudent.father} ');
+    print('tc   ${editeStudent.TC} ');
     String? date;
 
     if (editeStudent.brithDate == null) {
@@ -166,6 +172,7 @@ class Students with ChangeNotifier {
           'father': editeStudent.father,
           'mother': editeStudent.mother,
           'lastName': editeStudent.lastName,
+          'TC': editeStudent.TC,
           'email': editeStudent.email,
           "birthDate": date,
           "grade": editeStudent.grade,
@@ -236,6 +243,9 @@ class Students with ChangeNotifier {
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
             lastName: jsonResponRes['lastName'],
+            TC: jsonResponRes['TC'],
+            father: jsonResponRes['father'],
+            mother: jsonResponRes['mother'],
             email: jsonResponRes['email'],
             grade: jsonResponRes['grade'],
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
