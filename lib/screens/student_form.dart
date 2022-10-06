@@ -15,6 +15,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import '../model/grade.dart';
 import 'list_student.dart';
 
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb1;
+
 import 'dart:io' as io;
 
 class StudenForm extends StatefulWidget {
@@ -45,16 +48,15 @@ class _StudenFormState extends State<StudenForm> {
 
   var _initValues = {
     'id': '',
-    'TC': '',
-    'firstName': '',
-    'lastName': '',
-    'father': '',
-    'mother': '',
-    'email': '',
-    'birthDate': '',
-    'grade': '',
+    'TC': '888',
+    'firstName': 'Haldun',
+    'lastName': 'matar',
+    'father': 'ahamd',
+    'mother': 'hanaa',
+    'email': 'sfsd@fsdf.com',
+    'birthDate': '2022-10-21',
+    'grade': '3',
     'imageuri': '',
-    'birrthDate': ''
   };
   Future<void> getGradeList() async {
     await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
@@ -110,9 +112,13 @@ class _StudenFormState extends State<StudenForm> {
     }
     _formKey.currentState?.save();
     if (editeStudent != null) {
-      editeStudent?.imageuri =
-          Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
-      editeStudent?.image = _imageFile;
+      // Android-specific code
+
+      if (Platform.isAndroid) {
+        editeStudent?.imageuri =
+            Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
+        editeStudent?.image = _imageFile;
+      }
       // print('begin  uploads ');
       if (kIsWeb) {
         //   print('addStudentweb   uploads ');

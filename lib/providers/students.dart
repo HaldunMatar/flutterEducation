@@ -8,6 +8,9 @@ import 'package:education/model/student.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb1;
+
 import 'dart:convert' as convert;
 
 class Students with ChangeNotifier {
@@ -182,10 +185,13 @@ class Students with ChangeNotifier {
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         print(parsed);
+
         try {
-          editeStudent.image != null
-              ? await uploadImage(editeStudent.image, parsed['id'].toString())
-              : null;
+          if (Platform.isAndroid) {
+            editeStudent.image != null
+                ? await uploadImage(editeStudent.image, parsed['id'].toString())
+                : null;
+          }
         } on Exception catch (error) {
           print(" Image can not store o server $error.toString() ");
         }
