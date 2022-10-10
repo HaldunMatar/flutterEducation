@@ -34,11 +34,11 @@ class _StudenFormState extends State<StudenForm> {
   Grade? grade;
   io.File _file = io.File("zz");
 
-  Uint8List webImagereadAsBytes = Uint8List(10);
+  late Uint8List? webImagereadAsBytes = Uint8List(8);
   io.File? _imageFile;
   late Image image;
   late Image imageweb;
-  XFile? pickedImage;
+  XFile? pickedImagexfile;
   TextEditingController dateinput = TextEditingController();
   int? gradeid;
   List<Grade> itemsGrade = [];
@@ -58,6 +58,8 @@ class _StudenFormState extends State<StudenForm> {
     'grade': '3',
     'imageuri': '',
   };
+
+  late Students students;
   Future<void> getGradeList() async {
     await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
 
@@ -73,32 +75,51 @@ class _StudenFormState extends State<StudenForm> {
     final picker = ImagePicker();
 
     try {
-      pickedImage = await picker.pickImage(
-          source: inputSource == 'camera'
-              ? ImageSource.camera
-              : ImageSource.gallery);
+      if (!kIsWeb) {
+        final ImagePicker _picker = ImagePicker();
 
-      webImagereadAsBytes = (await pickedImage?.readAsBytes())!;
+        pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
 
-      if (kIsWeb) {
-        imageweb = Image.network(pickedImage!.path);
-      } else {
-        image = Image.file(io.File(pickedImage!.path));
-      }
-      _imageFile = io.File(pickedImage!.path);
-      path.basename(pickedImage!.path);
-      editeStudent?.image = _imageFile;
-      setState(() {
-        if (kIsWeb) {
-          webImagereadAsBytes = webImagereadAsBytes;
-          _imageFile = io.File(pickedImage!.path);
-          editeStudent?.image = _imageFile;
-        } else {
-          _imageFile = io.File(pickedImage!.path);
-          editeStudent?.image = _imageFile;
+        if (null != pickedImagexfile) {
+          var selectefile = io.File(pickedImagexfile!.path);
+          setState(() {
+            _imageFile = selectefile;
+          });
         }
-        editeStudent?.imageuri = path.basename(pickedImage!.path);
-      });
+
+        /*pickedImagexfile = await picker.pickImage(
+            source: inputSource == 'camera'
+                ? ImageSource.camera
+                : ImageSource.gallery);*/
+
+      } else {
+        final ImagePicker _picker = ImagePicker();
+
+        pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
+
+        if (null != pickedImagexfile) {
+          var f = await pickedImagexfile?.readAsBytes();
+          setState(() {
+            webImagereadAsBytes = f;
+            _imageFile = io.File('a');
+          });
+        }
+      }
+      /*
+      image = Image.file(io.File(pickedImagexfile!.path));
+
+      _imageFile = io.File(pickedImagexfile!.path);
+      path.basename(pickedImagexfile!.path);
+      editeStudent?.image = _imageFile;
+
+      
+      setState(() {
+      
+        _imageFile = io.File(pickedImagexfile!.path);
+        editeStudent?.image = _imageFile;
+       
+        editeStudent?.imageuri = path.basename(pickedImagexfile!.path);
+      });*/
     } on Exception catch (error) {
       print(" you do do not take image correctly  $error.toString() ");
     }
@@ -111,7 +132,10 @@ class _StudenFormState extends State<StudenForm> {
       return;
     }
     _formKey.currentState?.save();
+
+    print(editeStudent);
     if (editeStudent != null) {
+      print(editeStudent);
       // Android-specific code
 
       if (Platform.isAndroid) {
@@ -164,58 +188,42 @@ class _StudenFormState extends State<StudenForm> {
 
   var studentId;
   bool _init = true;
-  Future<void> didChangeDependencies() async {
-    print('didChangeDependencies');
-    studentId = ModalRoute.of(context)?.settings.arguments as String?;
-    setState(() {
-      _isLoading = false;
-    });
-    if (_init) {
-      if (studentId != null) {
-        print(studentId);
-        _isLoading = true;
-        await Provider.of<Students>(context, listen: false).findById(studentId);
-        editeStudent =
-            Provider.of<Students>(context, listen: false).currentStudent;
-        await getGradeList();
-        gradeid = editeStudent?.grade;
-        try {
-          DropdownButtonGrade =
-              itemsGrade.firstWhere((element) => element.id == gradeid);
-        } catch (e) {
-          DropdownButtonGrade = null;
-        }
+  Future<void> _findById(BuildContext context, String? studentid) async {
+    print('_findById_findById_findById_findById');
+    await getGradeList();
 
-        // remove this line
-        dateinput.text = editeStudent?.brithDate == null
-            ? ''
-            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-        _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
-        _initValues['firstName'] = editeStudent?.firstName ?? '';
-        _initValues['TC'] = editeStudent?.TC.toString() ?? '';
-        _initValues['lastName'] = editeStudent?.lastName ?? '';
-        _initValues['father'] = editeStudent?.father ?? '';
-        _initValues['mother'] = editeStudent?.mother ?? '';
-        _initValues['email'] = editeStudent?.email ?? '';
-        _initValues['birthDate'] = editeStudent?.brithDate == null
-            ? ''
-            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-        _initValues['grade'] = editeStudent?.grade.toString() ?? '';
-        _initValues['birthDate'] = editeStudent?.brithDate == null
-            ? ''
-            : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
-        setState(() {
-          _isLoading = false;
-        });
-      } else {
-        editeStudent = new Student.init();
-        _isLoading = true;
-        await getGradeList();
-        setState(() {
-          _isLoading = false;
-        });
+    if (studentId != null) {
+      print('Provider.of<Students>(context, listen: false).findById');
+      await Provider.of<Students>(context, listen: false).findById(studentid!);
+
+      gradeid = editeStudent?.grade;
+      try {
+        DropdownButtonGrade =
+            itemsGrade.firstWhere((element) => element.id == gradeid);
+      } catch (e) {
+        DropdownButtonGrade = null;
       }
+      editeStudent =
+          Provider.of<Students>(context, listen: false).currentStudent;
+      _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
+      _initValues['firstName'] = editeStudent?.firstName ?? '';
+      _initValues['TC'] = editeStudent?.TC.toString() ?? '';
+      _initValues['lastName'] = editeStudent?.lastName ?? '';
+      _initValues['father'] = editeStudent?.father ?? '';
+      _initValues['mother'] = editeStudent?.mother ?? '';
+      _initValues['email'] = editeStudent?.email ?? '';
+      _initValues['birthDate'] = editeStudent?.brithDate == null
+          ? ''
+          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
+      _initValues['grade'] = editeStudent?.grade.toString() ?? '';
+      _initValues['birthDate'] = editeStudent?.brithDate == null
+          ? ''
+          : DateFormat('yyyy-MM-dd').format(editeStudent!.brithDate!);
     }
+  }
+
+  Future<void> didChangeDependencies() async {
+    studentId = ModalRoute.of(context)?.settings.arguments as String?;
     super.didChangeDependencies();
   }
 
@@ -227,6 +235,8 @@ class _StudenFormState extends State<StudenForm> {
 
   @override
   Widget build(BuildContext context) {
+    //   students = Provider.of<Students>(context, listen: true);
+    print(' build    $studentId');
     return Scaffold(
         appBar: AppBar(
           title: Text('student Form'),
@@ -239,265 +249,283 @@ class _StudenFormState extends State<StudenForm> {
           ],
         ),
         drawer: AppDrawer(),
-        body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Padding(
-                padding: EdgeInsets.all(16.5),
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    children: <Widget>[
-                      TextFormField(
-                        readOnly: true,
-                        initialValue: _initValues['id'],
-                        decoration:
-                            InputDecoration(label: Center(child: Text(' ID '))),
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {}
-                          // editeStudent?.id = int.parse(value);
-                          //  print('onField onSaved  ID  ');
-                        },
-                        onFieldSubmitted: (value) {
-                          //  print('onFieldSubmitted ID');
-                        },
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['firstName'],
-                        decoration: InputDecoration(label: Text('First Name ')),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter First Name ';
-                          }
-                          // print('onField validator   First Name  ');
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {
-                            editeStudent?.firstName = value;
-                          }
+        body: FutureBuilder(
+          future: _findById(context, studentId),
+          builder: (ctx, snapshot) => snapshot.connectionState ==
+                  ConnectionState.waiting
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Padding(
+                  padding: EdgeInsets.all(16.5),
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: <Widget>[
+                        TextFormField(
+                          readOnly: true,
+                          initialValue: _initValues['id'],
+                          decoration: InputDecoration(
+                              label: Center(child: Text(' ID '))),
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {}
+                            // editeStudent?.id = int.parse(value);
+                            //  print('onField onSaved  ID  ');
+                          },
+                          onFieldSubmitted: (value) {
+                            //  print('onFieldSubmitted ID');
+                          },
+                          keyboardType: TextInputType.number,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['firstName'],
+                          decoration:
+                              InputDecoration(label: Text('First Name ')),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter First Name ';
+                            }
+                            // print('onField validator   First Name  ');
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {
+                              editeStudent?.firstName = value;
+                            }
 
-                          //('onField onSaved  First Name  ');
-                        },
-                        onFieldSubmitted: (value) {
-                          //  print('onFieldSubmitted First Name');
-                        },
-                        keyboardType: TextInputType.text,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['lastName'],
-                        decoration: InputDecoration(label: Text('Last Name ')),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Last Name ';
-                          }
-                          // print('onField validator   Last Name  ');
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {
-                            editeStudent?.lastName = value;
-                          }
+                            //('onField onSaved  First Name  ');
+                          },
+                          onFieldSubmitted: (value) {
+                            //  print('onFieldSubmitted First Name');
+                          },
+                          keyboardType: TextInputType.text,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['lastName'],
+                          decoration:
+                              InputDecoration(label: Text('Last Name ')),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Last Name ';
+                            }
+                            // print('onField validator   Last Name  ');
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {
+                              editeStudent?.lastName = value;
+                            }
 
-                          print('onField onSaved  Last Name  ');
-                        },
-                        onFieldSubmitted: (value) {
-                          // print('onFieldSubmitted Last Name');
-                        },
-                        keyboardType: TextInputType.text,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['father'],
-                        decoration: InputDecoration(label: Text('fathr Name ')),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter fathr Name ';
-                          }
-                          //  print('onField validator   fathr Name  ');
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {
-                            editeStudent?.father = value;
-                          }
-                        },
-                        onFieldSubmitted: (value) {
-                          // print('onFieldSubmitted fathr Name');
-                        },
-                        keyboardType: TextInputType.text,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['lastName'],
-                        decoration:
-                            InputDecoration(label: Text('Mother Name ')),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Mother Name ';
-                          }
-                          // print('onField validator   Mother Name  ');
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {
-                            editeStudent?.mother = value;
-                          }
+                            print('onField onSaved  Last Name  ');
+                          },
+                          onFieldSubmitted: (value) {
+                            // print('onFieldSubmitted Last Name');
+                          },
+                          keyboardType: TextInputType.text,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['father'],
+                          decoration:
+                              InputDecoration(label: Text('fathr Name ')),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter fathr Name ';
+                            }
+                            //  print('onField validator   fathr Name  ');
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {
+                              editeStudent?.father = value;
+                            }
+                          },
+                          onFieldSubmitted: (value) {
+                            // print('onFieldSubmitted fathr Name');
+                          },
+                          keyboardType: TextInputType.text,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['lastName'],
+                          decoration:
+                              InputDecoration(label: Text('Mother Name ')),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Mother Name ';
+                            }
+                            // print('onField validator   Mother Name  ');
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {
+                              editeStudent?.mother = value;
+                            }
 
-                          // print('onField onSaved  Mother Name  ');
-                        },
-                        onFieldSubmitted: (value) {
-                          //  print('onFieldSubmitted Mother Name');
-                        },
-                        keyboardType: TextInputType.text,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['TC'],
-                        decoration: InputDecoration(label: Text(' TC ')),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter TC ';
-                          }
-                          //  print('onField validator   TC  ');
-                          return null;
-                        },
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null || value!.isNotEmpty) {
-                            editeStudent?.TC = int.parse(value);
-                          }
+                            // print('onField onSaved  Mother Name  ');
+                          },
+                          onFieldSubmitted: (value) {
+                            //  print('onFieldSubmitted Mother Name');
+                          },
+                          keyboardType: TextInputType.text,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['TC'],
+                          decoration: InputDecoration(label: Text(' TC ')),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter TC ';
+                            }
+                            //  print('onField validator   TC  ');
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null || value!.isNotEmpty) {
+                              editeStudent?.TC = int.parse(value);
+                            }
 
-                          //print('onField onSaved  TC  ');
-                        },
-                        onFieldSubmitted: (value) {
-                          // print('onFieldSubmitted TC');
-                        },
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextFormField(
-                        controller: dateinput,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                            icon: Icon(
-                              Icons.calendar_today,
-                              color: Colors.red,
-                            ), //icon of text field
-                            labelText: "Enter Date" //label text of field
-                            ),
-                        readOnly: true,
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(
-                                  2000), //DateTime.now() - not to allow to choose before today.
-                              lastDate: DateTime(2101));
+                            //print('onField onSaved  TC  ');
+                          },
+                          onFieldSubmitted: (value) {
+                            // print('onFieldSubmitted TC');
+                          },
+                          keyboardType: TextInputType.number,
+                        ),
+                        TextFormField(
+                          controller: dateinput,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.calendar_today,
+                                color: Colors.red,
+                              ), //icon of text field
+                              labelText: "Enter Date" //label text of field
+                              ),
+                          readOnly: true,
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(
+                                    2000), //DateTime.now() - not to allow to choose before today.
+                                lastDate: DateTime(2101));
 
-                          if (pickedDate != null) {
-                            print(
-                                pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                            String formattedDate =
-                                DateFormat('yyyy-MM-dd').format(pickedDate);
-                            setState(() {
-                              dateinput.text =
-                                  formattedDate; //set output date to TextField value.
-                            });
-                          } else {}
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Brith Date ';
-                          }
+                            if (pickedDate != null) {
+                              print(
+                                  pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                              String formattedDate =
+                                  DateFormat('yyyy-MM-dd').format(pickedDate);
+                              setState(() {
+                                dateinput.text =
+                                    formattedDate; //set output date to TextField value.
+                              });
+                            } else {}
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Brith Date ';
+                            }
 
-                          return null;
-                        },
-                        onSaved: (newValue) {
-                          // print('updatedDt ' + newValue!);
-                          if (newValue != null && newValue != '') {
-                            editeStudent?.brithDate = DateTime.parse(newValue);
-                          }
-                        },
-                        onFieldSubmitted: (value) {
-                          //    print('onFieldSubmitted');
-                          //  print('updatedDt ' + value);
-                        },
-                        keyboardType: TextInputType.datetime,
-                      ),
-                      TextFormField(
-                        initialValue: _initValues['email'],
-                        decoration: InputDecoration(label: Text('Email ')),
-                        textInputAction: TextInputAction.next,
-                        onSaved: (value) {
-                          if (value != null) {
-                            editeStudent?.email = value;
-                          }
-                        },
-                        onFieldSubmitted: (value) {
-                          //  print('onFieldSubmitted');
-                        },
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (val) =>
-                            val == null || val.isEmpty || isEmail(val)
-                                ? null
-                                : "Invalid Email",
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(100)),
-                                  gradient: LinearGradient(
-                                      colors: [Colors.green, Colors.orange],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight)),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                clipBehavior: Clip.hardEdge,
-                                child: _imageFile != null
-                                    ? Image.file(
-                                        _imageFile!,
-                                        fit: BoxFit.fill,
-                                        // width: 75,
-                                        // height: 75,
-                                      )
-                                    : (studentId != null)
-                                        ? Image.network(
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            // print('updatedDt ' + newValue!);
+                            if (newValue != null && newValue != '') {
+                              editeStudent?.brithDate =
+                                  DateTime.parse(newValue);
+                            }
+                          },
+                          onFieldSubmitted: (value) {
+                            //    print('onFieldSubmitted');
+                            //  print('updatedDt ' + value);
+                          },
+                          keyboardType: TextInputType.datetime,
+                        ),
+                        TextFormField(
+                          initialValue: _initValues['email'],
+                          decoration: InputDecoration(label: Text('Email ')),
+                          textInputAction: TextInputAction.next,
+                          onSaved: (value) {
+                            if (value != null) {
+                              editeStudent?.email = value;
+                            }
+                          },
+                          onFieldSubmitted: (value) {
+                            //  print('onFieldSubmitted');
+                          },
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (val) =>
+                              val == null || val.isEmpty || isEmail(val)
+                                  ? null
+                                  : "Invalid Email",
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(100)),
+                                    gradient: LinearGradient(
+                                        colors: [Colors.green, Colors.orange],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight)),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    clipBehavior: Clip.hardEdge,
+                                    child: studentId == null
+                                        ? kIsWeb
+                                            ? Image.memory(
+                                                webImagereadAsBytes!,
+                                                fit: BoxFit.fill,
+                                              )
+                                            : _imageFile != null
+                                                ? Image.file(
+                                                    _imageFile!,
+                                                    fit: BoxFit.fill,
+                                                    // width: 75,
+                                                    // height: 75,
+                                                  )
+                                                : null
+                                        : Image.network(
                                             'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
                                             fit: BoxFit.fill,
                                           )
-                                        : Image.network(
-                                            'http://${Setting.basicUrl}/downloadFile/person.png',
-                                            fit: BoxFit.fill,
-                                          ),
+                                    /* : (studentId != null)
+                                            ? Image.network(
+                                                'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
+                                                fit: BoxFit.fill,
+                                              )
+                                            : Image.network(
+                                                'http://${Setting.basicUrl}/downloadFile/person.png',
+                                                fit: BoxFit.fill,
+                                              ),*/
+                                    ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                              onPressed: () async {
-                                takeImage(Theme.of(context).platform ==
-                                        TargetPlatform.android
-                                    ? 'camera'
-                                    : 'gallery');
-                              },
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Colors.red[400],
-                              )),
-                        ],
-                      ),
-                      DropdownButton<Grade>(
-                          value: DropdownButtonGrade,
-                          /*gradeid != null
+                            IconButton(
+                                onPressed: () async {
+                                  takeImage(Theme.of(context).platform ==
+                                          TargetPlatform.android
+                                      ? 'camera'
+                                      : 'gallery');
+                                },
+                                icon: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.red[400],
+                                )),
+                          ],
+                        ),
+                        DropdownButton<Grade>(
+                            value: DropdownButtonGrade,
+                            /*gradeid != null
                               ? DropdownButtonGrade == null
                                   ? itemsGrade.length == 0 || gradeid == null
                                       ? null
@@ -505,31 +533,32 @@ class _StudenFormState extends State<StudenForm> {
                                           (element) => element.id == gradeid)
                                   : DropdownButtonGrade
                               : DropdownButtonGrade,*/
-                          icon: const Icon(Icons.arrow_downward,
-                              color: Colors.red),
-                          elevation: 16,
-                          underline: Container(
-                            height: 2,
-                            color: Colors.green,
-                          ),
-                          items: itemsGrade
-                              .map<DropdownMenuItem<Grade>>((Grade value) {
-                            return DropdownMenuItem<Grade>(
-                              value: value,
-                              child: Text(value.nameAr),
-                            );
-                          }).toList(),
-                          itemHeight: 50,
-                          onChanged: (value) {
-                            setState(() {
-                              DropdownButtonGrade = value;
-                              editeStudent?.grade = value?.id;
-                            });
-                          })
-                    ],
+                            icon: const Icon(Icons.arrow_downward,
+                                color: Colors.red),
+                            elevation: 16,
+                            underline: Container(
+                              height: 2,
+                              color: Colors.green,
+                            ),
+                            items: itemsGrade
+                                .map<DropdownMenuItem<Grade>>((Grade value) {
+                              return DropdownMenuItem<Grade>(
+                                value: value,
+                                child: Text(value.nameAr),
+                              );
+                            }).toList(),
+                            itemHeight: 50,
+                            onChanged: (value) {
+                              setState(() {
+                                DropdownButtonGrade = value;
+                                editeStudent?.grade = value?.id;
+                              });
+                            })
+                      ],
+                    ),
                   ),
                 ),
-              ),
+        ),
         bottomNavigationBar: BottomNavigationBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           //currentIndex: controller.currentIndex.value,
