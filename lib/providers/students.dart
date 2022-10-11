@@ -230,7 +230,7 @@ class Students with ChangeNotifier {
 
   Future findById(String studentId) async {
     var url = Uri.http(Setting.basicUrl, '/students/get/$studentId');
-    // print('length Grade Grade Grade Grade Grade Grade ');
+
     // print(' findById  ${url.toString()}');
     try {
       var responRes = await http.get(
@@ -246,19 +246,22 @@ class Students with ChangeNotifier {
         const Utf8Codec utf8 = Utf8Codec();
         final jsonResponRes =
             convert.jsonDecode(utf8.decode(responRes.bodyBytes));
+
         currentStudent = Student(
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
             lastName: jsonResponRes['lastName'],
-            TC: int.parse(jsonResponRes['tc']),
+            TC: jsonResponRes['tc'] != null
+                ? int.parse(jsonResponRes['tc'])
+                : null,
             father: jsonResponRes['father'],
             mother: jsonResponRes['mother'],
             email: jsonResponRes['email'],
             grade: jsonResponRes['grade'],
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
                 .add(Duration(days: 1)));
-
-        print('find');
+        print(
+            'find findfindfindfindfindfindfindfindfindfindfindfindfindfindfindfindfind');
         print(jsonResponRes['tc']);
       } else {
         print(responRes.body);
