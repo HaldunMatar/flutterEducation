@@ -152,7 +152,7 @@ class _StudenFormState extends State<StudenForm> {
         print("save savesavesavesave");
         print(editeStudent?.image);
         print("save savesavesavesave");
-        print('father edite object ${editeStudent?.father}');
+        print('father edite object ${editeStudent?.TC}');
 
         await Provider.of<Students>(context, listen: false)
             .addStudent(editeStudent!);
@@ -190,19 +190,15 @@ class _StudenFormState extends State<StudenForm> {
   bool _init = true;
   Future<void> _findById(BuildContext context, String? studentid) async {
     print('_findById_findById_findById_findById');
-    await getGradeList();
+    // await getGradeList();
+    await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
+
+    itemsGrade = Provider.of<Grades>(context, listen: false).listGrade;
 
     if (studentId != null) {
       print('Provider.of<Students>(context, listen: false).findById');
       await Provider.of<Students>(context, listen: false).findById(studentid!);
 
-      gradeid = editeStudent?.grade;
-      try {
-        DropdownButtonGrade =
-            itemsGrade.firstWhere((element) => element.id == gradeid);
-      } catch (e) {
-        DropdownButtonGrade = null;
-      }
       editeStudent =
           Provider.of<Students>(context, listen: false).currentStudent;
       _initValues['id'] = (editeStudent?.id.toString() ?? 0.toString());
@@ -224,6 +220,9 @@ class _StudenFormState extends State<StudenForm> {
 
   Future<void> didChangeDependencies() async {
     studentId = ModalRoute.of(context)?.settings.arguments as String?;
+    if (studentId == null) {
+      editeStudent = Student.init();
+    }
     super.didChangeDependencies();
   }
 
@@ -524,15 +523,11 @@ class _StudenFormState extends State<StudenForm> {
                           ],
                         ),
                         DropdownButton<Grade>(
-                            value: DropdownButtonGrade,
-                            /*gradeid != null
-                              ? DropdownButtonGrade == null
-                                  ? itemsGrade.length == 0 || gradeid == null
-                                      ? null
-                                      : itemsGrade.firstWhere(
-                                          (element) => element.id == gradeid)
-                                  : DropdownButtonGrade
-                              : DropdownButtonGrade,*/
+                            value: studentId != null
+                                ? itemsGrade.firstWhere((element) =>
+                                    element.id ==
+                                    int.parse(_initValues['grade']!))
+                                : null,
                             icon: const Icon(Icons.arrow_downward,
                                 color: Colors.red),
                             elevation: 16,

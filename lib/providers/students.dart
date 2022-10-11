@@ -175,7 +175,7 @@ class Students with ChangeNotifier {
           'father': editeStudent.father,
           'mother': editeStudent.mother,
           'lastName': editeStudent.lastName,
-          'TC': editeStudent.TC,
+          'tc': editeStudent.TC,
           'email': editeStudent.email,
           "birthDate": date,
           "grade": editeStudent.grade,
@@ -184,8 +184,9 @@ class Students with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
+        print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+        print(editeStudent.TC);
         print(parsed);
-
         try {
           if (Platform.isAndroid) {
             editeStudent.image != null
@@ -249,15 +250,18 @@ class Students with ChangeNotifier {
             id: jsonResponRes['id'],
             firstName: jsonResponRes['firstName'],
             lastName: jsonResponRes['lastName'],
-            TC: jsonResponRes['TC'],
+            TC: int.parse(jsonResponRes['tc']),
             father: jsonResponRes['father'],
             mother: jsonResponRes['mother'],
             email: jsonResponRes['email'],
             grade: jsonResponRes['grade'],
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
                 .add(Duration(days: 1)));
+
+        print('find');
+        print(jsonResponRes['tc']);
       } else {
-        //  print(responRes.body);
+        print(responRes.body);
       }
     } catch (error) {
       print(error.toString());
