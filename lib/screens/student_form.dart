@@ -34,11 +34,12 @@ class _StudenFormState extends State<StudenForm> {
   Grade? grade;
   io.File _file = io.File("zz");
 
-  Uint8List webImagereadAsBytes = Uint8List(10);
+  late Uint8List? webImagereadAsBytes = Uint8List(8);
   io.File? _imageFile;
   late Image image;
   late Image imageweb;
-  XFile? pickedImage;
+  XFile? pickedImagexfile;
+
   TextEditingController dateinput = TextEditingController();
   int? gradeid;
   List<Grade> itemsGrade = [];
@@ -73,32 +74,49 @@ class _StudenFormState extends State<StudenForm> {
     final picker = ImagePicker();
 
     try {
-      pickedImage = await picker.pickImage(
-          source: inputSource == 'camera'
-              ? ImageSource.camera
-              : ImageSource.gallery);
+      if (!kIsWeb) {
+        final ImagePicker _picker = ImagePicker();
 
-      webImagereadAsBytes = (await pickedImage?.readAsBytes())!;
+        pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
 
-      if (kIsWeb) {
-        imageweb = Image.network(pickedImage!.path);
-      } else {
-        image = Image.file(io.File(pickedImage!.path));
-      }
-      _imageFile = io.File(pickedImage!.path);
-      path.basename(pickedImage!.path);
-      editeStudent?.image = _imageFile;
-      setState(() {
-        if (kIsWeb) {
-          webImagereadAsBytes = webImagereadAsBytes;
-          _imageFile = io.File(pickedImage!.path);
-          editeStudent?.image = _imageFile;
-        } else {
-          _imageFile = io.File(pickedImage!.path);
-          editeStudent?.image = _imageFile;
+        if (null != pickedImagexfile) {
+          var selectefile = io.File(pickedImagexfile!.path);
+          setState(() {
+            _imageFile = selectefile;
+          });
         }
-        editeStudent?.imageuri = path.basename(pickedImage!.path);
-      });
+
+        /*pickedImagexfile = await picker.pickImage(
+            source: inputSource == 'camera'
+                ? ImageSource.camera
+                : ImageSource.gallery);*/
+
+      } else {
+        final ImagePicker _picker = ImagePicker();
+
+        pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
+
+        if (null != pickedImagexfile) {
+          var f = await pickedImagexfile?.readAsBytes();
+          setState(() {
+            webImagereadAsBytes = f;
+            _imageFile = io.File('a');
+          });
+        }
+      }
+      /*
+      image = Image.file(io.File(pickedImagexfile!.path));
+      _imageFile = io.File(pickedImagexfile!.path);
+      path.basename(pickedImagexfile!.path);
+      editeStudent?.image = _imageFile;
+      
+      setState(() {
+      
+        _imageFile = io.File(pickedImagexfile!.path);
+        editeStudent?.image = _imageFile;
+       
+        editeStudent?.imageuri = path.basename(pickedImagexfile!.path);
+      });*/
     } on Exception catch (error) {
       print(" you do do not take image correctly  $error.toString() ");
     }
@@ -461,25 +479,37 @@ class _StudenFormState extends State<StudenForm> {
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight)),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                clipBehavior: Clip.hardEdge,
-                                child: _imageFile != null
-                                    ? Image.file(
-                                        _imageFile!,
-                                        fit: BoxFit.fill,
-                                        // width: 75,
-                                        // height: 75,
-                                      )
-                                    : (studentId != null)
-                                        ? Image.network(
-                                            'http://${Setting.basicUrl}/downloadFile/person.png',
-                                            fit: BoxFit.fill,
-                                          )
-                                        : Image.network(
-                                            'http://${Setting.basicUrl}/downloadFile/person.png',
-                                            fit: BoxFit.fill,
-                                          ),
-                              ),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  clipBehavior: Clip.hardEdge,
+                                  child: studentId == null
+                                      ? kIsWeb
+                                          ? Image.memory(
+                                              webImagereadAsBytes!,
+                                              fit: BoxFit.fill,
+                                            )
+                                          : _imageFile != null
+                                              ? Image.file(
+                                                  _imageFile!,
+                                                  fit: BoxFit.fill,
+                                                  // width: 75,
+                                                  // height: 75,
+                                                )
+                                              : null
+                                      : Image.network(
+                                          'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
+                                          fit: BoxFit.fill,
+                                        )
+                                  /* : (studentId != null)
+                                            ? Image.network(
+                                                'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
+                                                fit: BoxFit.fill,
+                                              )
+                                            : Image.network(
+                                                'http://${Setting.basicUrl}/downloadFile/person.png',
+                                                fit: BoxFit.fill,
+                                              ),*/
+
+                                  ),
                             ),
                           ),
                           IconButton(
