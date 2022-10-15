@@ -14,10 +14,8 @@ import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../model/grade.dart';
 import 'list_student.dart';
-
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb1;
-
 import 'dart:io' as io;
 
 class StudenForm extends StatefulWidget {
@@ -91,7 +89,7 @@ class _StudenFormState extends State<StudenForm> {
                 ? ImageSource.camera
                 : ImageSource.gallery);*/
 
-      } else {
+      } else if (kIsWeb) {
         final ImagePicker _picker = ImagePicker();
 
         pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
@@ -140,6 +138,9 @@ class _StudenFormState extends State<StudenForm> {
               path.basename(_imageFile!.path);
           editeStudent?.image = _imageFile;
         }
+      }
+      if (kIsWeb) {
+        editeStudent?.webImagereadAsBytes = webImagereadAsBytes;
       }
 
       print("save savesavesavesave");
@@ -512,11 +513,14 @@ class _StudenFormState extends State<StudenForm> {
                           ),
                           IconButton(
                               onPressed: () async {
-                                takeImage(Theme.of(context).platform ==
+                                takeImage('gallery');
+                              }
+                              /*   takeImage(Theme.of(context).platform ==
                                         TargetPlatform.android
                                     ? 'camera'
                                     : 'gallery');
-                              },
+                              }*/
+                              ,
                               icon: Icon(
                                 Icons.camera_alt,
                                 color: Colors.red[400],

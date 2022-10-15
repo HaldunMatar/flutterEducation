@@ -158,12 +158,9 @@ class _StudentListViewState extends State<StudentListView> {
         key: ValueKey(item.id.toString()),
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: null
-
-          /*  NetworkImage(
+          backgroundImage: NetworkImage(
             'http://${Setting.basicUrl}/downloadFile/${item.id}.jpg',
-          )*/
-          ,
+          ),
         ),
         title: Text(item.firstName),
         subtitle: Text(item.id.toString()),

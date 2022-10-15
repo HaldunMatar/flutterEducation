@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 class Student with ChangeNotifier {
   int? id;
@@ -15,6 +16,8 @@ class Student with ChangeNotifier {
   String? imageuri;
 
   File? image;
+
+  Uint8List? webImagereadAsBytes = Uint8List(8);
 
   int? TC;
 

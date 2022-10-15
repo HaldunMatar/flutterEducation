@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' as io;
 import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
@@ -128,6 +129,8 @@ class Students with ChangeNotifier {
             finaldate = null;
           }
 
+          print("id di id  id   $element['id']");
+
           _listStudent.add(Student(
               id: element['id'],
               lastName: element['firstName'],
@@ -155,7 +158,7 @@ class Students with ChangeNotifier {
   addStudent(Student editeStudent) async {
     print('addStudentaddStudentaddStudentaddStudentaddStudent');
     final url = Uri.http(Setting.basicUrl, '/students/new/');
-    print('tc   ${editeStudent.TC} ');
+    print('tc   ${editeStudent.id} ');
     String? date;
 
     if (editeStudent.brithDate == null) {
@@ -190,11 +193,21 @@ class Students with ChangeNotifier {
         print(editeStudent.TC);
         print(parsed);
         try {
-          if (Platform.isAndroid) {
+          //if (!kIsWeb) {
+          //  if (Platform.isAndroid) {
+
+          if (!kIsWeb) {
             editeStudent.image != null
                 ? await uploadImage(editeStudent.image, parsed['id'].toString())
                 : null;
+          } else if (kIsWeb) {
+            editeStudent.webImagereadAsBytes != null
+                ? await uploadImageweb(
+                    editeStudent.webImagereadAsBytes, parsed['id'].toString())
+                : null;
           }
+
+          // }
         } on Exception catch (error) {
           print(" Image can not store o server $error.toString() ");
         }
@@ -205,28 +218,6 @@ class Students with ChangeNotifier {
     } catch (error) {
       print(error);
       throw error;
-    }
-  }
-
-  Future uploadImage(
-    io.File? image,
-    String parseid,
-  ) async {
-    final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
-    var request = http.MultipartRequest('POST', url);
-
-    //  print(image.path.toString());
-    var takenPicture = await http.MultipartFile.fromPath(
-        "file", image == null ? '' : image.path.toString());
-    request.fields.addAll({'fileid': parseid});
-    request.files.add(takenPicture);
-    // print('afrer  takenPicture   belote ');
-
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      // print('Image  Student is uploadedImage  Student is uploaded!');
-    } else {
-      //  print('Image Student  not uploaded');
     }
   }
 
@@ -290,5 +281,44 @@ class Students with ChangeNotifier {
     );
     deleteprocess = false;
     notifyListeners();
+  }
+}
+
+Future uploadImageweb(Uint8List? webImagereadAsBytes, String string) async {
+  print(" uploadImageweb uploadImageweb uploadImageweb uploadImageweb  ");
+  final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
+  var request = http.MultipartRequest('POST', url);
+  var image = http.MultipartFile.fromBytes('file', webImagereadAsBytes!);
+  request.fields.addAll({'fileid': string});
+  request.files.add(image);
+
+  var response = await request.send();
+  if (response.statusCode == 200) {
+    // print('Image  Student is uploadedImage  Student is uploaded!');
+  } else {
+    print('Image Student  not uploaded');
+  }
+}
+
+Future uploadImage(
+  io.File? image,
+  String parseid,
+) async {
+  print('uploadImageuploadImageuploadImageuploadImage');
+  final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
+  var request = http.MultipartRequest('POST', url);
+
+  //  print(image.path.toString());
+  var takenPicture = await http.MultipartFile.fromPath(
+      "file", image == null ? '' : image.path.toString());
+  request.fields.addAll({'fileid': parseid});
+  request.files.add(takenPicture);
+  // print('afrer  takenPicture   belote ');
+
+  var response = await request.send();
+  if (response.statusCode == 200) {
+    // print('Image  Student is uploadedImage  Student is uploaded!');
+  } else {
+    print('Image Student  not uploaded');
   }
 }
