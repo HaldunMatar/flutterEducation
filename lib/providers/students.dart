@@ -153,6 +153,7 @@ class Students with ChangeNotifier {
   }
 
   addStudent(Student editeStudent) async {
+    print('addStudentaddStudentaddStudentaddStudentaddStudent');
     final url = Uri.http(Setting.basicUrl, '/students/new/');
     print('tc   ${editeStudent.TC} ');
     String? date;
@@ -163,6 +164,7 @@ class Students with ChangeNotifier {
       date = DateFormat('yyyy-MM-dd').format(editeStudent.brithDate!);
     }
     try {
+      print('postpostpostpostpostpost');
       final response = await http.post(
         url,
         headers: {
@@ -184,7 +186,7 @@ class Students with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
-        print('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+        print('200200200200200200200200200200200200200200200');
         print(editeStudent.TC);
         print(parsed);
         try {

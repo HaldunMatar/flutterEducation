@@ -128,29 +128,27 @@ class _StudenFormState extends State<StudenForm> {
     if (!isValid!) {
       return;
     }
+
     _formKey.currentState?.save();
+
     if (editeStudent != null) {
       // Android-specific code
-
-      if (Platform.isAndroid) {
-        editeStudent?.imageuri =
-            Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
-        editeStudent?.image = _imageFile;
+      if (!kIsWeb) {
+        if (Platform.isAndroid) {
+          editeStudent?.imageuri = Setting.basicUrl +
+              '\\uploads\\' +
+              path.basename(_imageFile!.path);
+          editeStudent?.image = _imageFile;
+        }
       }
-      // print('begin  uploads ');
-      if (kIsWeb) {
-        //   print('addStudentweb   uploads ');
-        // await Provider.of<Students>(context, listen: false).addStudentweb(
-        //     editeStudent!, webImagereadAsBytes, imageweb, pickedImage);
-      } else {
-        print("save savesavesavesave");
-        print(editeStudent?.image);
-        print("save savesavesavesave");
-        print('father edite object ${editeStudent?.father}');
 
-        await Provider.of<Students>(context, listen: false)
-            .addStudent(editeStudent!);
-      }
+      print("save savesavesavesave");
+      print(editeStudent?.image);
+      print("save savesavesavesave");
+      print('father edite object ${editeStudent?.father}');
+
+      await Provider.of<Students>(context, listen: false)
+          .addStudent(editeStudent!);
     } else {
       AwesomeDialog(
         context: context,
@@ -321,8 +319,6 @@ class _StudenFormState extends State<StudenForm> {
                           if (value != null || value!.isNotEmpty) {
                             editeStudent?.lastName = value;
                           }
-
-                          print('onField onSaved  Last Name  ');
                         },
                         onFieldSubmitted: (value) {
                           // print('onFieldSubmitted Last Name');
@@ -358,7 +354,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Mother Name ';
                           }
-                          // print('onField validator   Mother Name  ');
+                          print('onField validator   Mother Name  ');
                           return null;
                         },
                         textInputAction: TextInputAction.next,
@@ -367,7 +363,7 @@ class _StudenFormState extends State<StudenForm> {
                             editeStudent?.mother = value;
                           }
 
-                          // print('onField onSaved  Mother Name  ');
+                          print('onField onSaved  Mother Name  ');
                         },
                         onFieldSubmitted: (value) {
                           //  print('onFieldSubmitted Mother Name');
@@ -389,6 +385,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (value != null || value!.isNotEmpty) {
                             editeStudent?.TC = int.parse(value);
                           }
+                          print('onField onSaved  tc tc  ');
 
                           //print('onField onSaved  TC  ');
                         },
@@ -439,6 +436,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (newValue != null && newValue != '') {
                             editeStudent?.brithDate = DateTime.parse(newValue);
                           }
+                          print('onField onSaved DateTime');
                         },
                         onFieldSubmitted: (value) {
                           //    print('onFieldSubmitted');
