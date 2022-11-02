@@ -140,7 +140,12 @@ class _StudenFormState extends State<StudenForm> {
         }
       }
       if (kIsWeb) {
+        print('assigned webImagereadAsBytes  to  editeStudent  ');
+        print(editeStudent?.firstName);
+
         editeStudent?.webImagereadAsBytes = webImagereadAsBytes;
+
+        print(editeStudent?.webImagereadAsBytes?.length);
       }
 
       print("save savesavesavesave");

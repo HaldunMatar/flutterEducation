@@ -15,17 +15,20 @@ import 'package:flutter/foundation.dart' show kIsWeb1;
 import 'dart:convert' as convert;
 
 class Students with ChangeNotifier {
-  bool deleteprocess = false;
-
-  Student? get currentStudent1 => currentStudent;
-  Student? currentStudent;
-  List<Student> _listStudent = [];
-  List<Student> get listStudent => _listStudent;
   // Student? _editeStudent = null;
 
   Students() {
     // fetchStudents();
   }
+
+  Student? currentStudent;
+  bool deleteprocess = false;
+
+  List<Student> _listStudent = [];
+
+  Student? get currentStudent1 => currentStudent;
+
+  List<Student> get listStudent => _listStudent;
 
   Future<List<Student>> serachStudent(String stringSearch) async {
     // _listStudent = [];
@@ -286,18 +289,29 @@ class Students with ChangeNotifier {
 
 Future uploadImageweb(Uint8List? webImagereadAsBytes, String string) async {
   print(" uploadImageweb uploadImageweb uploadImageweb uploadImageweb  ");
-  final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
-  var request = http.MultipartRequest('POST', url);
-  var image = http.MultipartFile.fromBytes('file', webImagereadAsBytes!);
-  request.fields.addAll({'fileid': string});
-  request.files.add(image);
+  // final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
+  // var request = http.MultipartRequest('POST', url);
+  // var image = http.MultipartFile.fromBytes('file', webImagereadAsBytes!);
 
-  var response = await request.send();
-  if (response.statusCode == 200) {
+  // request.fields.addAll({'fileid': string});
+  //request.files.add(image);
+  // print(webImagereadAsBytes.length);
+  //var response = await request.send();
+  print(Setting.basicUrl + "/students/uploadFile");
+
+  var fdd = await http.post(
+    Uri.parse(Setting.basicUrl + "/students/uploadFile"),
+    headers: <String, String>{
+      'Content-Type': 'image/jpeg',
+    },
+    body: webImagereadAsBytes,
+  );
+
+  /* if (response.statusCode == 200) {
     // print('Image  Student is uploadedImage  Student is uploaded!');
   } else {
     print('Image Student  not uploaded');
-  }
+  }*/
 }
 
 Future uploadImage(
