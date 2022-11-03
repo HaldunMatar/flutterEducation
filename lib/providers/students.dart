@@ -295,12 +295,12 @@ Future uploadImageweb(Uint8List? webImagereadAsBytes, String string) async {
 
   // request.fields.addAll({'fileid': string});
   //request.files.add(image);
-  // print(webImagereadAsBytes.length);
+  print(webImagereadAsBytes?.length);
   //var response = await request.send();
-  print(Setting.basicUrl + "/students/uploadFile");
+  print(Setting.basicUrl + "/students/uploadFileFromWeb");
 
   var fdd = await http.post(
-    Uri.parse(Setting.basicUrl + "/students/uploadFile"),
+    Uri.parse(Setting.basicUrl + "/students/uploadFileFromWeb"),
     headers: <String, String>{
       'Content-Type': 'image/jpeg',
     },
