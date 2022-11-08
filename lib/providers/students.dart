@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' as io;
+import 'dart:html' as html;
 import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -289,23 +290,25 @@ class Students with ChangeNotifier {
 
 Future uploadImageweb(Uint8List? webImagereadAsBytes, String string) async {
   print(" uploadImageweb uploadImageweb uploadImageweb uploadImageweb  ");
-  // final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
-  // var request = http.MultipartRequest('POST', url);
-  // var image = http.MultipartFile.fromBytes('file', webImagereadAsBytes!);
+  final url = Uri.http(Setting.basicUrl, "/students/uploadFileFromWeb");
+  var request = http.MultipartRequest('POST', url);
+
+  List<int> slectedfile = webImagereadAsBytes!;
+  var image = http.MultipartFile.fromBytes('file', slectedfile!);
 
   // request.fields.addAll({'fileid': string});
-  //request.files.add(image);
+  request.files.add(image, ContentType('primaryType', 'subType'));
   print(webImagereadAsBytes?.length);
-  //var response = await request.send();
+  var response = await request.send();
   print(Setting.basicUrl + "/students/uploadFileFromWeb");
 
-  var fdd = await http.post(
+  /*var fdd = await http.post(
     Uri.parse(Setting.basicUrl + "/students/uploadFileFromWeb"),
-    headers: <String, String>{
-      'Content-Type': 'image/jpeg',
-    },
+    //headers: <String, String>{
+    //   'Content-Type': 'image/jpeg',
+    // },
     body: webImagereadAsBytes,
-  );
+  );*/
 
   /* if (response.statusCode == 200) {
     // print('Image  Student is uploadedImage  Student is uploaded!');
