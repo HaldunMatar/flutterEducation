@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +17,7 @@ class Student with ChangeNotifier {
   String? imageuri;
 
   File? image;
-
+  PlatformFile? objFile;
   Uint8List? webImagereadAsBytes = Uint8List(8);
 
   int? TC;

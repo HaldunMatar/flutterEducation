@@ -17,6 +17,7 @@ import 'list_student.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb1;
 import 'dart:io' as io;
+import 'package:file_picker/file_picker.dart';
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -37,6 +38,8 @@ class _StudenFormState extends State<StudenForm> {
   late Image image;
   late Image imageweb;
   XFile? pickedImagexfile;
+
+  PlatformFile? objFile;
 
   TextEditingController dateinput = TextEditingController();
   int? gradeid;
@@ -68,6 +71,20 @@ class _StudenFormState extends State<StudenForm> {
     super.initState();
   }
 
+  void chooseFileUsingFilePicker() async {
+    //-----pick file by file picker,
+
+    var result = await FilePicker.platform.pickFiles(
+      withReadStream:
+          true, // this will return PlatformFile object with read stream
+    );
+    if (result != null) {
+      setState(() {
+        objFile = result.files.single;
+      });
+    }
+  }
+
   Future<void> takeImage(String inputSource) async {
     final picker = ImagePicker();
 
@@ -83,13 +100,9 @@ class _StudenFormState extends State<StudenForm> {
             _imageFile = selectefile;
           });
         }
-
-        /*pickedImagexfile = await picker.pickImage(
-            source: inputSource == 'camera'
-                ? ImageSource.camera
-                : ImageSource.gallery);*/
-
       } else if (kIsWeb) {
+        chooseFileUsingFilePicker();
+
         final ImagePicker _picker = ImagePicker();
 
         pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
@@ -102,19 +115,6 @@ class _StudenFormState extends State<StudenForm> {
           });
         }
       }
-      /*
-      image = Image.file(io.File(pickedImagexfile!.path));
-      _imageFile = io.File(pickedImagexfile!.path);
-      path.basename(pickedImagexfile!.path);
-      editeStudent?.image = _imageFile;
-      
-      setState(() {
-      
-        _imageFile = io.File(pickedImagexfile!.path);
-        editeStudent?.image = _imageFile;
-       
-        editeStudent?.imageuri = path.basename(pickedImagexfile!.path);
-      });*/
     } on Exception catch (error) {
       print(" you do do not take image correctly  $error.toString() ");
     }
@@ -144,7 +144,7 @@ class _StudenFormState extends State<StudenForm> {
         print(editeStudent?.firstName);
 
         editeStudent?.webImagereadAsBytes = webImagereadAsBytes;
-
+        editeStudent?.objFile = objFile;
         print(editeStudent?.webImagereadAsBytes?.length);
       }
 

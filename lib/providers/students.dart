@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' as io;
-import 'dart:html' as html;
+
 import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -204,10 +205,16 @@ class Students with ChangeNotifier {
             editeStudent.image != null
                 ? await uploadImage(editeStudent.image, parsed['id'].toString())
                 : null;
+            editeStudent.image != null
+                ? await uploadImage(editeStudent.image, parsed['id'].toString())
+                : null;
           } else if (kIsWeb) {
-            editeStudent.webImagereadAsBytes != null
+            /*editeStudent.webImagereadAsBytes != null
                 ? await uploadImageweb(
                     editeStudent.webImagereadAsBytes, parsed['id'].toString())
+                : null;*/
+            editeStudent.objFile != null
+                ? uploadSelectedFile(editeStudent.objFile)
                 : null;
           }
 
@@ -288,33 +295,35 @@ class Students with ChangeNotifier {
   }
 }
 
+void uploadSelectedFile(PlatformFile? objFile) async {
+  //---Create http package multipart request object
+  final request = http.MultipartRequest(
+    "POST",
+    Uri.parse("http://192.168.1.100:8080/students/uploadFileFromWeb"),
+  );
+  //-----add other fields if needed
+  request.fields["id"] = "abc";
+  //-----add selected file with request
+
+  request.files.add(new http.MultipartFile(
+      "file", objFile!.readStream!, objFile!.size,
+      filename: objFile!.name));
+  print(request.url.toString());
+  print(request.url.toString());
+  var resp = await request.send();
+  //------Read response
+  //String result = await resp.stream.bytesToString();
+
+  //-------Your response
+  //print(result);
+}
+
 Future uploadImageweb(Uint8List? webImagereadAsBytes, String string) async {
   print(" uploadImageweb uploadImageweb uploadImageweb uploadImageweb  ");
   final url = Uri.http(Setting.basicUrl, "/students/uploadFileFromWeb");
   var request = http.MultipartRequest('POST', url);
 
   List<int> slectedfile = webImagereadAsBytes!;
-  var image = http.MultipartFile.fromBytes('file', slectedfile!);
-
-  // request.fields.addAll({'fileid': string});
-  request.files.add(image, ContentType('primaryType', 'subType'));
-  print(webImagereadAsBytes?.length);
-  var response = await request.send();
-  print(Setting.basicUrl + "/students/uploadFileFromWeb");
-
-  /*var fdd = await http.post(
-    Uri.parse(Setting.basicUrl + "/students/uploadFileFromWeb"),
-    //headers: <String, String>{
-    //   'Content-Type': 'image/jpeg',
-    // },
-    body: webImagereadAsBytes,
-  );*/
-
-  /* if (response.statusCode == 200) {
-    // print('Image  Student is uploadedImage  Student is uploaded!');
-  } else {
-    print('Image Student  not uploaded');
-  }*/
 }
 
 Future uploadImage(
