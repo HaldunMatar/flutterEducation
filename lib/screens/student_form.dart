@@ -76,11 +76,16 @@ class _StudenFormState extends State<StudenForm> {
 
     var result = await FilePicker.platform.pickFiles(
       withReadStream:
-          true, // this will return PlatformFile object with read stream
+          false, // this will return PlatformFile object with read stream
     );
     if (result != null) {
       setState(() {
         objFile = result.files.single;
+        print(
+            "chooseFileUsingFilePickerchooseFileUsingFilePickerchooseFileUsingFilePicker");
+        // print(result.files.first.bytes);
+
+        webImagereadAsBytes = result.files.first.bytes;
       });
     }
   }
@@ -103,14 +108,14 @@ class _StudenFormState extends State<StudenForm> {
       } else if (kIsWeb) {
         chooseFileUsingFilePicker();
 
-        final ImagePicker _picker = ImagePicker();
+        //   final ImagePicker _picker = ImagePicker();
 
-        pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
+        // pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
 
         if (null != pickedImagexfile) {
           var f = await pickedImagexfile?.readAsBytes();
           setState(() {
-            webImagereadAsBytes = f;
+            //webImagereadAsBytes = f;
             _imageFile = io.File('a');
           });
         }
@@ -145,10 +150,11 @@ class _StudenFormState extends State<StudenForm> {
 
         editeStudent?.webImagereadAsBytes = webImagereadAsBytes;
         editeStudent?.objFile = objFile;
+        print('webImagereadAsBytes?.length');
         print(editeStudent?.webImagereadAsBytes?.length);
       }
 
-      print("save savesavesavesave");
+      print("save savesavesavesaveooooo");
       print(editeStudent?.image);
       print("save savesavesavesave");
       print('father edite object ${editeStudent?.father}');
@@ -487,10 +493,12 @@ class _StudenFormState extends State<StudenForm> {
                                   clipBehavior: Clip.hardEdge,
                                   child: studentId == null
                                       ? kIsWeb
-                                          ? Image.memory(
-                                              webImagereadAsBytes!,
-                                              fit: BoxFit.fill,
-                                            )
+                                          ? objFile != null
+                                              ? Image.memory(
+                                                  webImagereadAsBytes!,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Center()
                                           : _imageFile != null
                                               ? Image.file(
                                                   _imageFile!,

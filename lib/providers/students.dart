@@ -297,19 +297,28 @@ class Students with ChangeNotifier {
 
 void uploadSelectedFile(PlatformFile? objFile) async {
   //---Create http package multipart request object
+
+  print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
+  //print(objFile);
+
   final request = http.MultipartRequest(
     "POST",
-    Uri.parse("http://192.168.1.100:8080/students/uploadFileFromWeb"),
+    Uri.parse("http://${Setting.basicUrl}/students/uploadFileFromWeb"),
   );
   //-----add other fields if needed
   request.fields["id"] = "abc";
   //-----add selected file with request
+  print('beforesendbeforesendbeforesendbeforesend');
+  //print(objFile);
+  /*request.files.add(new http.MultipartFile(
+      "file", objFile!.readStream!, objFile.size,
+      filename: objFile.name));*/
+  request.files.add(new http.MultipartFile.fromBytes(
+      "file", objFile!.bytes as List<int>,
+      filename: objFile.name));
 
-  request.files.add(new http.MultipartFile(
-      "file", objFile!.readStream!, objFile!.size,
-      filename: objFile!.name));
-  print(request.url.toString());
-  print(request.url.toString());
+  //print(request.url.toString());
+  print('send from web ');
   var resp = await request.send();
   //------Read response
   //String result = await resp.stream.bytesToString();
