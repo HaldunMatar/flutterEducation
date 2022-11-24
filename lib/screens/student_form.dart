@@ -137,12 +137,11 @@ class _StudenFormState extends State<StudenForm> {
     if (editeStudent != null) {
       // Android-specific code
       if (!kIsWeb) {
-        if (Platform.isAndroid) {
-          editeStudent?.imageuri = Setting.basicUrl +
-              '\\uploads\\' +
-              path.basename(_imageFile!.path);
-          editeStudent?.image = _imageFile;
-        }
+        // if (Platform.isAndroid) {
+        editeStudent?.imageuri =
+            Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
+        editeStudent?.image = _imageFile;
+        // }
       }
       if (kIsWeb) {
         print('assigned webImagereadAsBytes  to  editeStudent  ');
