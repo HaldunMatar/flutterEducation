@@ -214,7 +214,8 @@ class Students with ChangeNotifier {
                     editeStudent.webImagereadAsBytes, parsed['id'].toString())
                 : null;*/
             editeStudent.objFile != null
-                ? uploadSelectedFile(editeStudent.objFile)
+                ? uploadSelectedFile(
+                    editeStudent.objFile, parsed['id'].toString())
                 : null;
           }
 
@@ -295,18 +296,18 @@ class Students with ChangeNotifier {
   }
 }
 
-void uploadSelectedFile(PlatformFile? objFile) async {
+void uploadSelectedFile(PlatformFile? objFile, String idfile) async {
   //---Create http package multipart request object
 
   print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
-  //print(objFile);
+  print(idfile);
 
   final request = http.MultipartRequest(
     "POST",
     Uri.parse("http://${Setting.basicUrl}/students/uploadFileFromWeb"),
   );
   //-----add other fields if needed
-  request.fields["id"] = "abc";
+  request.fields["fileid"] = idfile;
   //-----add selected file with request
   print('beforesendbeforesendbeforesendbeforesend');
   //print(objFile);

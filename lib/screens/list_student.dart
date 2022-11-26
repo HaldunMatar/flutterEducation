@@ -5,12 +5,10 @@ import 'package:education/screens/student_form.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
-
 import '../model/setting.dart';
 
 class StudentListView extends StatefulWidget {
   static const routeName = '/StudentListView';
-
   @override
   State<StudentListView> createState() => _StudentListViewState();
 }
