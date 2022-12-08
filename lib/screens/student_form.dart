@@ -13,11 +13,15 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../model/grade.dart';
-import 'list_student.dart';
 import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb1;
+
 import 'dart:io' as io;
 import 'package:file_picker/file_picker.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
+import 'dart:math';
 
 class StudenForm extends StatefulWidget {
   static const routeName = '/StudenForm';
@@ -38,6 +42,7 @@ class _StudenFormState extends State<StudenForm> {
   late Image image;
   late Image imageweb;
   XFile? pickedImagexfile;
+  bool isImageLoaded = false;
 
   PlatformFile? objFile;
 
@@ -81,11 +86,13 @@ class _StudenFormState extends State<StudenForm> {
     if (result != null) {
       setState(() {
         objFile = result.files.single;
-        print(
-            "chooseFileUsingFilePickerchooseFileUsingFilePickerchooseFileUsingFilePicker");
+        //  print(
+        //   "chooseFileUsingFilePickerchooseFileUsingFilePickerchooseFileUsingFilePicker");
         // print(result.files.first.bytes);
 
         webImagereadAsBytes = result.files.first.bytes;
+
+        isImageLoaded = true;
       });
     }
   }
@@ -115,6 +122,7 @@ class _StudenFormState extends State<StudenForm> {
         if (null != pickedImagexfile) {
           var f = await pickedImagexfile?.readAsBytes();
           setState(() {
+            isImageLoaded = true;
             //webImagereadAsBytes = f;
             _imageFile = io.File('a');
           });
@@ -137,26 +145,30 @@ class _StudenFormState extends State<StudenForm> {
     if (editeStudent != null) {
       // Android-specific code
       if (!kIsWeb) {
-        // if (Platform.isAndroid) {
+        if (editeStudent?.id != null) {
+          await urlToFile(
+                  'http://${Setting.basicUrl}/downloadFile/$studentId.jpg')
+              .then((value) => _imageFile = value);
+        }
         editeStudent?.imageuri =
             Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
         editeStudent?.image = _imageFile;
         // }
       }
       if (kIsWeb) {
-        print('assigned webImagereadAsBytes  to  editeStudent  ');
-        print(editeStudent?.firstName);
+        // print('assigned webImagereadAsBytes  to  editeStudent  ');
+        // print(editeStudent?.firstName);
 
         editeStudent?.webImagereadAsBytes = webImagereadAsBytes;
         editeStudent?.objFile = objFile;
-        print('webImagereadAsBytes?.length');
-        print(editeStudent?.webImagereadAsBytes?.length);
+        //  print('webImagereadAsBytes?.length');
+        // print(editeStudent?.webImagereadAsBytes?.length);
       }
 
-      print("save savesavesavesaveooooo");
-      print(editeStudent?.image);
-      print("save savesavesavesave");
-      print('father edite object ${editeStudent?.father}');
+      // print("save savesavesavesaveooooo");
+      // print(editeStudent?.image);
+      //  print("save savesavesavesave");
+      // print('father edite object ${editeStudent?.father}');
 
       await Provider.of<Students>(context, listen: false)
           .addStudent(editeStudent!);
@@ -192,7 +204,7 @@ class _StudenFormState extends State<StudenForm> {
   var studentId;
   bool _init = true;
   Future<void> didChangeDependencies() async {
-    print('didChangeDependencies');
+    //print('didChangeDependencies');
     studentId = ModalRoute.of(context)?.settings.arguments as String?;
     setState(() {
       _isLoading = false;
@@ -365,7 +377,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Mother Name ';
                           }
-                          print('onField validator   Mother Name  ');
+                          //  print('onField validator   Mother Name  ');
                           return null;
                         },
                         textInputAction: TextInputAction.next,
@@ -374,7 +386,7 @@ class _StudenFormState extends State<StudenForm> {
                             editeStudent?.mother = value;
                           }
 
-                          print('onField onSaved  Mother Name  ');
+                          //    print('onField onSaved  Mother Name  ');
                         },
                         onFieldSubmitted: (value) {
                           //  print('onFieldSubmitted Mother Name');
@@ -396,7 +408,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (value != null || value!.isNotEmpty) {
                             editeStudent?.TC = int.parse(value);
                           }
-                          print('onField onSaved  tc tc  ');
+                          //  print('onField onSaved  tc tc  ');
 
                           //print('onField onSaved  TC  ');
                         },
@@ -425,8 +437,8 @@ class _StudenFormState extends State<StudenForm> {
                               lastDate: DateTime(2101));
 
                           if (pickedDate != null) {
-                            print(
-                                pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                            //   print(
+                            //   pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                             String formattedDate =
                                 DateFormat('yyyy-MM-dd').format(pickedDate);
                             setState(() {
@@ -447,7 +459,7 @@ class _StudenFormState extends State<StudenForm> {
                           if (newValue != null && newValue != '') {
                             editeStudent?.brithDate = DateTime.parse(newValue);
                           }
-                          print('onField onSaved DateTime');
+                          //   print('onField onSaved DateTime');
                         },
                         onFieldSubmitted: (value) {
                           //    print('onFieldSubmitted');
@@ -506,10 +518,23 @@ class _StudenFormState extends State<StudenForm> {
                                                   // height: 75,
                                                 )
                                               : null
-                                      : Image.network(
-                                          'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
-                                          fit: BoxFit.fill,
-                                        )
+                                      : isImageLoaded
+                                          ? Image.memory(
+                                              webImagereadAsBytes!,
+                                              fit: BoxFit.fill,
+                                            )
+                                          : _imageFile != null
+                                              ? Image.file(
+                                                  _imageFile!,
+                                                  fit: BoxFit.fill,
+                                                  // width: 75,
+                                                  // height: 75,
+                                                )
+                                              : Image.network(
+                                                  'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
+                                                  fit: BoxFit.fill,
+                                                )
+
                                   /* : (studentId != null)
                                             ? Image.network(
                                                 'http://${Setting.basicUrl}/downloadFile/$studentId.jpg',
@@ -554,7 +579,7 @@ class _StudenFormState extends State<StudenForm> {
                           elevation: 16,
                           underline: Container(
                             height: 2,
-                            color: Colors.green,
+                            color: Colors.red,
                           ),
                           items: itemsGrade
                               .map<DropdownMenuItem<Grade>>((Grade value) {
@@ -629,4 +654,26 @@ class _StudenFormState extends State<StudenForm> {
   }
 
   void println(String firstName) {}
+}
+
+Future<io.File> urlToFile(String imageUrl) async {
+// generate random number.
+  var rng = new Random();
+// get temporary directory of device.
+  io.Directory tempDir = await getTemporaryDirectory();
+// get temporary path from temporary directory.
+  String tempPath = tempDir.path;
+// create a new file in temporary path with random file name.
+  io.File file =
+      new io.File('$tempPath' + (rng.nextInt(100)).toString() + '.jpg');
+// call http.get method and pass imageUrl into it to get response.
+
+  final url = Uri.http(Setting.basicUrl, imageUrl);
+  http.Response response = await http.get(url);
+
+// write bodyBytes received in response to file.
+  await file.writeAsBytes(response.bodyBytes);
+// now return the file which is created with random name in
+// temporary directory and image bytes from response is written to // that file.
+  return file;
 }

@@ -3,35 +3,23 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' as io;
-
 import 'package:education/model/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:education/model/student.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb1;
-
 import 'dart:convert' as convert;
 
 class Students with ChangeNotifier {
   // Student? _editeStudent = null;
-
   Students() {
     // fetchStudents();
   }
-
   Student? currentStudent;
   bool deleteprocess = false;
-
   List<Student> _listStudent = [];
-
   Student? get currentStudent1 => currentStudent;
-
   List<Student> get listStudent => _listStudent;
-
   Future<List<Student>> serachStudent(String stringSearch) async {
     // _listStudent = [];
     var url = Uri.http(Setting.basicUrl, '/students/allstudents/');
@@ -109,7 +97,6 @@ class Students with ChangeNotifier {
     Map<String, String> queryParameters = {
       "searchString": searchString == null ? "" : searchString
     };
-
     var url = Uri.http(
         Setting.basicUrl,
         '/students/studentspage/ ${pagkey.toString()}/ ${num.toString()}',
@@ -173,25 +160,51 @@ class Students with ChangeNotifier {
     }
     try {
       print('postpostpostpostpostpost');
-      final response = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Access-Control-Allow-Origin, Accept"
-        },
-        body: json.encode({
-          'firstName': editeStudent.firstName,
-          'father': editeStudent.father,
-          'mother': editeStudent.mother,
-          'lastName': editeStudent.lastName,
-          'tc': editeStudent.TC,
-          'email': editeStudent.email,
-          "birthDate": date,
-          "grade": editeStudent.grade,
-          "imageuri": editeStudent.imageuri,
-        }),
-      );
+      var response;
+      if (editeStudent.id == null) {
+        response = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers":
+                "Access-Control-Allow-Origin, Accept"
+          },
+          body: json.encode({
+            'firstName': editeStudent.firstName,
+            'father': editeStudent.father,
+            'mother': editeStudent.mother,
+            'lastName': editeStudent.lastName,
+            'tc': editeStudent.TC,
+            'email': editeStudent.email,
+            "birthDate": date,
+            "grade": editeStudent.grade,
+            "imageuri": editeStudent.imageuri,
+          }),
+        );
+      } else {
+        response = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers":
+                "Access-Control-Allow-Origin, Accept"
+          },
+          body: json.encode({
+            'id': editeStudent.id,
+            'firstName': editeStudent.firstName,
+            'father': editeStudent.father,
+            'mother': editeStudent.mother,
+            'lastName': editeStudent.lastName,
+            'tc': editeStudent.TC,
+            'email': editeStudent.email,
+            "birthDate": date,
+            "grade": editeStudent.grade,
+            "imageuri": editeStudent.imageuri,
+          }),
+        );
+      }
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         print('200200200200200200200200200200200200200200200');
@@ -265,11 +278,11 @@ class Students with ChangeNotifier {
             grade: jsonResponRes['grade'],
             brithDate: DateTime.parse(jsonResponRes['birthDate'])
                 .add(Duration(days: 1)));
-        print(
-            'find findfindfindfindfindfindfindfindfindfindfindfindfindfindfindfindfind');
-        print(jsonResponRes['tc']);
+        //  print(
+        //   'find findfindfindfindfindfindfindfindfindfindfindfindfindfindfindfindfind');
+        //  print(jsonResponRes['tc']);
       } else {
-        print(responRes.body);
+        // print(responRes.body);
       }
     } catch (error) {
       print(error.toString());
@@ -282,7 +295,7 @@ class Students with ChangeNotifier {
   Future<void> deletestudent(int? id) async {
     deleteprocess = true;
     var url = Uri.http(Setting.basicUrl, '/students/delete/$id');
-    print(url);
+    //print(url);
     var responRes = await http.delete(
       url,
       headers: {
@@ -299,8 +312,8 @@ class Students with ChangeNotifier {
 void uploadSelectedFile(PlatformFile? objFile, String idfile) async {
   //---Create http package multipart request object
 
-  print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
-  print(idfile);
+  // print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
+  //print(idfile);
 
   final request = http.MultipartRequest(
     "POST",
@@ -309,7 +322,7 @@ void uploadSelectedFile(PlatformFile? objFile, String idfile) async {
   //-----add other fields if needed
   request.fields["fileid"] = idfile;
   //-----add selected file with request
-  print('beforesendbeforesendbeforesendbeforesend');
+  //print('beforesendbeforesendbeforesendbeforesend');
   //print(objFile);
   /*request.files.add(new http.MultipartFile(
       "file", objFile!.readStream!, objFile.size,
@@ -319,7 +332,7 @@ void uploadSelectedFile(PlatformFile? objFile, String idfile) async {
       filename: objFile.name));
 
   //print(request.url.toString());
-  print('send from web ');
+  //print('send from web ');
   var resp = await request.send();
   //------Read response
   //String result = await resp.stream.bytesToString();
@@ -353,7 +366,7 @@ Future uploadImage(
 
   var response = await request.send();
   if (response.statusCode == 200) {
-    // print('Image  Student is uploadedImage  Student is uploaded!');
+    print('Image  Student is uploadedImage  Student is uploaded!');
   } else {
     print('Image Student  not uploaded');
   }
