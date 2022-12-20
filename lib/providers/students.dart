@@ -218,9 +218,9 @@ class Students with ChangeNotifier {
             editeStudent.image != null
                 ? await uploadImage(editeStudent.image, parsed['id'].toString())
                 : null;
-            editeStudent.image != null
-                ? await uploadImage(editeStudent.image, parsed['id'].toString())
-                : null;
+            //editeStudent.image != null
+            //  ? await uploadImage(editeStudent.image, parsed['id'].toString())
+            // : null;
           } else if (kIsWeb) {
             /*editeStudent.webImagereadAsBytes != null
                 ? await uploadImageweb(
@@ -312,8 +312,9 @@ class Students with ChangeNotifier {
 void uploadSelectedFile(PlatformFile? objFile, String idfile) async {
   //---Create http package multipart request object
 
-  // print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
-  //print(idfile);
+  print('uploadSelectedFileuploadSelectedFileuploadSelectedFile');
+  print(idfile);
+  print(idfile.length);
 
   final request = http.MultipartRequest(
     "POST",
@@ -357,7 +358,12 @@ Future uploadImage(
   final url = Uri.http(Setting.basicUrl, "/students/uploadFile");
   var request = http.MultipartRequest('POST', url);
 
-  //  print(image.path.toString());
+  if (image == null)
+    print('uploadImage  is nu ll ');
+  else
+    print('uploadImage  is not null  ');
+
+  print('uploadImage ${image?.path.toString()}');
   var takenPicture = await http.MultipartFile.fromPath(
       "file", image == null ? '' : image.path.toString());
   request.fields.addAll({'fileid': parseid});
@@ -366,8 +372,9 @@ Future uploadImage(
 
   var response = await request.send();
   if (response.statusCode == 200) {
-    print('Image  Student is uploadedImage  Student is uploaded!');
+    print(
+        ' uploadImage  Image  Student is uploadedImage  Student is uploaded!');
   } else {
-    print('Image Student  not uploaded');
+    print(' uploadImage Image Student  not uploaded');
   }
 }

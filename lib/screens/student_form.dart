@@ -8,6 +8,7 @@ import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uri_to_file/uri_to_file.dart';
 import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
@@ -43,6 +44,7 @@ class _StudenFormState extends State<StudenForm> {
   late Image imageweb;
   XFile? pickedImagexfile;
   bool isImageLoaded = false;
+  bool newimageupload = false;
 
   PlatformFile? objFile;
 
@@ -104,6 +106,8 @@ class _StudenFormState extends State<StudenForm> {
       if (!kIsWeb) {
         final ImagePicker _picker = ImagePicker();
 
+        newimageupload = true;
+
         pickedImagexfile = await _picker.pickImage(source: ImageSource.gallery);
 
         if (null != pickedImagexfile) {
@@ -146,9 +150,10 @@ class _StudenFormState extends State<StudenForm> {
       // Android-specific code
       if (!kIsWeb) {
         if (editeStudent?.id != null) {
-          await urlToFile(
-                  'http://${Setting.basicUrl}/downloadFile/$studentId.jpg')
-              .then((value) => _imageFile = value);
+          if (!newimageupload)
+            await urlToFile('/downloadFile/$studentId.jpg').then((value) {
+              _imageFile = value;
+            });
         }
         editeStudent?.imageuri =
             Setting.basicUrl + '\\uploads\\' + path.basename(_imageFile!.path);
@@ -666,13 +671,17 @@ Future<io.File> urlToFile(String imageUrl) async {
 // create a new file in temporary path with random file name.
   io.File file =
       new io.File('$tempPath' + (rng.nextInt(100)).toString() + '.jpg');
+
 // call http.get method and pass imageUrl into it to get response.
 
   final url = Uri.http(Setting.basicUrl, imageUrl);
+  print('url.toString()');
+  print(url.toString());
   http.Response response = await http.get(url);
-
+  print(response.bodyBytes.length);
 // write bodyBytes received in response to file.
   await file.writeAsBytes(response.bodyBytes);
+
 // now return the file which is created with random name in
 // temporary directory and image bytes from response is written to // that file.
   return file;
