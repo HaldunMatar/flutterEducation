@@ -11,6 +11,7 @@ import '../model/grade.dart';
 
 class Grades with ChangeNotifier {
   List<Grade> listGrade = [];
+  int a = 20;
 
   Grade? currentGrad;
 
