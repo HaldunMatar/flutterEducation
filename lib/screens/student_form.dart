@@ -8,7 +8,6 @@ import 'package:education/model/student.dart';
 import 'package:education/providers/students.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uri_to_file/uri_to_file.dart';
 import 'package:validators/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
@@ -36,18 +35,12 @@ class StudenForm extends StatefulWidget {
 class _StudenFormState extends State<StudenForm> {
   Student? editeStudent;
   Grade? grade;
-  io.File _file = io.File("zz");
-
   late Uint8List? webImagereadAsBytes = Uint8List(8);
   io.File? _imageFile;
-  late Image image;
-  late Image imageweb;
   XFile? pickedImagexfile;
   bool isImageLoaded = false;
   bool newimageupload = false;
-
   PlatformFile? objFile;
-
   TextEditingController dateinput = TextEditingController();
   int? gradeid;
   List<Grade> itemsGrade = [];
@@ -69,7 +62,6 @@ class _StudenFormState extends State<StudenForm> {
   };
   Future<void> getGradeList() async {
     await Provider.of<Grades>(context, listen: false).getGradeListByPage(0, 50);
-
     itemsGrade = Provider.of<Grades>(context, listen: false).listGrade;
   }
 
@@ -80,7 +72,6 @@ class _StudenFormState extends State<StudenForm> {
 
   void chooseFileUsingFilePicker() async {
     //-----pick file by file picker,
-
     var result = await FilePicker.platform.pickFiles(
       withReadStream:
           false, // this will return PlatformFile object with read stream
@@ -88,12 +79,7 @@ class _StudenFormState extends State<StudenForm> {
     if (result != null) {
       setState(() {
         objFile = result.files.single;
-        //  print(
-        //   "chooseFileUsingFilePickerchooseFileUsingFilePickerchooseFileUsingFilePicker");
-        // print(result.files.first.bytes);
-
         webImagereadAsBytes = result.files.first.bytes;
-
         isImageLoaded = true;
       });
     }

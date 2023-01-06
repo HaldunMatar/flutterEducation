@@ -42,12 +42,15 @@ PODS:
     - SDWebImage/Core (= 5.13.5)
   - SDWebImage/Core (5.13.5)
   - SwiftyGif (5.4.3)
+  - uri_to_file (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - uri_to_file (from `.symlinks/plugins/uri_to_file/ios`)
 
 SPEC REPOS:
   trunk:
@@ -65,6 +68,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
+  uri_to_file:
+    :path: ".symlinks/plugins/uri_to_file/ios"
 
 SPEC CHECKSUMS:
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
@@ -75,6 +80,7 @@ SPEC CHECKSUMS:
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   SDWebImage: 23d714cd599354ee7906dbae26dff89b421c4370
   SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
+  uri_to_file: c4726881848febf4806f0a5707bd12903e02b0f0
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 

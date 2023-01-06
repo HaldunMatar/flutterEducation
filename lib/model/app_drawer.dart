@@ -25,8 +25,7 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.person),
             title: Text('Student List View'),
             onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(StudentListView.routeName);
+              Navigator.of(context).popAndPushNamed(StudentListView.routeName);
             },
           ),
           Divider(),
